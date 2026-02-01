@@ -597,24 +597,27 @@
 
     /* --- 2. THEATRE MODE ENGINE --- */
     function launchCinemaMode(url, title) {
-		console.log("Click detected! Attempting to play:", url);
-	    const videoElement = document.getElementById('mainVideo');
-	    const playerContainer = document.getElementById('cinemaPlayer');
-	    
-	    // Clear previous source to prevent 416 errors on re-load
-	    videoElement.pause();
-	    videoElement.removeAttribute('src'); 
-	    videoElement.load();
-	
-	    document.getElementById('playerTrackTitle').innerText = title;
-	    videoElement.src = url;
-	    playerContainer.style.display = 'flex';
-	    
-	    videoElement.play().catch(e => {
-	        console.error("Playback failed. Path tried: " + url);
-        	alert("Error: The file '" + url + "' could not be found or is 0KB.");
-	    });
-	}
+        console.log("Click detected! Attempting to play:", url);
+        const videoElement = document.getElementById('mainVideo');
+        const playerContainer = document.getElementById('cinemaPlayer');
+        
+        videoElement.pause();
+        
+        // We add the "./" to make sure the browser knows to look 
+        // in the current folder's subdirectories.
+        videoElement.src = "./" + url; 
+        
+        videoElement.load();
+        
+        document.getElementById('playerTrackTitle').innerText = title;
+        playerContainer.style.display = 'flex';
+        
+        videoElement.play().catch(e => {
+            console.error("Playback failed. Path tried: " + url);
+            // This alert triggers if the file is a 0KB LFS pointer
+            alert("Error: The file '" + url + "' is empty (0KB) on this server. Run 'git lfs pull' in your terminal.");
+        });
+    }
 
     function exitCinemaMode() {
         const videoElement = document.getElementById('mainVideo');
