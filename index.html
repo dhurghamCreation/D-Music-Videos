@@ -570,29 +570,29 @@
 
     /* --- 2. THEATRE MODE ENGINE (FIXED VERSION) --- */
     function launchCinemaMode(url, title) {
-        console.log("System Loading Path:", url);
-        const videoElement = document.getElementById('mainVideo');
-        const playerContainer = document.getElementById('cinemaPlayer');
-        
-        // 1. Fix the space issue for Vera i Nadezehda
-        const safeUrl = encodeURI(url);
-        
-        // 2. Prepare the Player
-        videoElement.pause();
-        // We use ./ to ensure it stays in your repository root
-        videoElement.src = "./" + safeUrl; 
-        videoElement.load(); 
-
-        document.getElementById('playerTrackTitle').innerText = title;
-        playerContainer.style.display = 'flex';
-        
-        // 3. Play logic with Browser Security handling
-        videoElement.play().catch(e => {
-            console.error("Playback stalled:", e);
-            // We removed the annoying alert so it doesn't interrupt you
-            console.log("Note: Browser requires a user click to play audio.");
-        });
-    }
+	    const videoElement = document.getElementById('mainVideo');
+	    const playerContainer = document.getElementById('cinemaPlayer');
+	    
+	    // The '?v=' adds a unique number to the end to force GitHub to send the LATEST version
+	    const versionedUrl = encodeURI(url) + "?v=" + Date.now();
+	    
+	    videoElement.pause();
+	    videoElement.removeAttribute('src'); // Completely clear old data
+	    videoElement.load();
+	    
+	    videoElement.src = "./" + versionedUrl;
+	    videoElement.setAttribute('preload', 'auto'); // Tell browser to start downloading immediately
+	    
+	    document.getElementById('playerTrackTitle').innerText = title;
+	    playerContainer.style.display = 'flex';
+	
+	    // Give the browser a half-second to buffer
+	    setTimeout(() => {
+	        videoElement.play().catch(e => {
+	            console.log("Playback requires user interaction.");
+	        });
+	    }, 500);
+	}
 
     function exitCinemaMode() {
         const videoElement = document.getElementById('mainVideo');
