@@ -285,7 +285,7 @@
             text-align: center;
             transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-style: preserve-3d;
-			pointer-events: none;
+			pointer-events: auto !important;
         }
 
         .card:hover .card-inner { transform: rotateY(180deg); }
@@ -298,7 +298,7 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-			pointer-events: none;
+			pointer-events: auto !important;
         }
 
         .card-front {
@@ -563,23 +563,33 @@
     const imgRoot = "images/";
 
     const mediaDatabase = [
-        { name: "Run (FIFA 17)", video: mediaRoot + "run_small.mp4", image: imgRoot + "run.png", desc: "High Energy Track" },
-        { name: "Raging", video: mediaRoot + "Raging_small.mp4", image: imgRoot + "raging.png", desc: "Kygo & Kodaline" },
-        { name: "ZHU - Faded", video: mediaRoot + "ZHU_small.mp4", image: imgRoot + "zhu.png", desc: "Deep House Classic" },
-        { name: "Shelter", video: mediaRoot + "Shelter_small.mp4", image: imgRoot + "shelter.png", desc: "Porter Robinson" },
-        { name: "Mexican Song", video: mediaRoot + "Mexican_song_small.mp4", image: imgRoot + "Compass.png", desc: "Local Favorite" },
-        { name: "Digitalism", video: mediaRoot + "Digitalism_small.mp4", image: imgRoot + "Digitalism.png", desc: "Electronic Beats" },
-		{ 
-		  name: "Vera i Nadezehda", 
-		  video: mediaRoot + "Vera i Nadezehda_small.mp4", 
-		  image: imgRoot + "stadium_bg.png", 
-		  desc: "Special Track" 
-		},
-        { name: "Cars", video: mediaRoot + "Cars.mp4", image: imgRoot + "Cars 2.png", desc: "Disney Pixar Classic" }, // Updated image name
-        { name: "Horton", video: mediaRoot + "Horton.mp4", image: imgRoot + "Horton.png", desc: "Signature Film" },
-        { name: "Kung Fu Panda 3", video: mediaRoot + "KungFuPanda3.mp4", image: imgRoot + "Kung Fu Panda 3.png", desc: "Dreamworks Elite" }
-    ];
+	    { name: "Run (FIFA 17)", video: "music/run_small.mp4", image: "images/run.png", desc: "High Energy" },
+	    { name: "Raging", video: "music/Raging_small.mp4", image: "images/Raging.png", desc: "Kygo" },
+	    { name: "ZHU - Faded", video: "music/ZHU_small.mp4", image: "images/ZHU.png", desc: "Deep House" },
+	    { name: "Shelter", video: "music/Shelter_small.mp4", image: "images/Shelter.png", desc: "Porter Robinson" },
+	    { name: "Mexican Song", video: "music/Mexican_song_small.mp4", image: "images/Compass.png", desc: "Local Favorite" },
+	    { name: "Digitalism", video: "music/Digitalism_small.mp4", image: "images/Digitalism.png", desc: "Electronic Beats" },
+	    { name: "Vera i Nadezehda", video: "music/Vera i Nadezehda_small.mp4", image: "images/vera.png", desc: "Special Track" }
+	];
 
+	function launchCinemaMode(url, title) {
+	    const videoElement = document.getElementById('mainVideo');
+	    const playerContainer = document.getElementById('cinemaPlayer');
+	    
+	    // We encode the URL to handle the spaces in "Vera i Nadezehda"
+	    const encodedUrl = encodeURI(url);
+	    
+	    videoElement.pause();
+	    videoElement.src = "./" + encodedUrl; 
+	    videoElement.load(); 
+	
+	    playerContainer.style.display = 'flex';
+	    
+	    videoElement.play().catch(e => {
+	        console.error("Playback failed:", e);
+	        alert("The video is there, but the browser is blocking it. Click the video to start!");
+	    });
+	}
     /* --- 1. LOGIN SYSTEM --- */
     function attemptLogin() {
         const user = document.getElementById('username').value;
