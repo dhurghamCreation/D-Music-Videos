@@ -222,7 +222,8 @@
             background-size: cover;
             background-position: center;
             opacity: 0;
-            transition: opacity 1.5s ease-in-out;
+            transition: opacity 0.5s ease-in-out;
+			filter: brightness(0.5) contrast(1.1);
         }
 
         .slide.active { opacity: 1; }
@@ -461,16 +462,20 @@
 
     <div id="home" class="section-container active">
         <div id="hero-slider">
-            <div class="slide active" style="background-image: url('images/Background beautiful image.png'); filter: brightness(0.6);"></div>
-            <div class="slide" style="background-image: url('images/Raging.png'); filter: brightness(0.6);"></div>
-            <div class="slide" style="background-image: url('images/Shelter.png'); filter: brightness(0.6);"></div>
-            
-            <div class="hero-content">
-                <h1 class="hero-title">Experience the Future.</h1>
-                <p class="hero-desc">Watch movies and enjoy your time!</p>
-                <button class="action-btn" onclick="switchTab('movies')">Start Watching</button>
-            </div>
-        </div>
+		    <div class="slide active" style="background-image: url('images/Background beautiful image.png');"></div>
+		    <div class="slide" style="background-image: url('images/Raging.png');"></div>
+		    <div class="slide" style="background-image: url('images/Shelter.png');"></div>
+		    
+		    <div class="slide" style="background-image: url('images/run.png');"></div>
+		    <div class="slide" style="background-image: url('images/Digitalism.png');"></div>
+		    <div class="slide" style="background-image: url('images/stadium_bg.png');"></div>
+		    
+		    <div class="hero-content">
+		        <h1 class="hero-title">Experience the Future.</h1>
+		        <p class="hero-desc">Watch movies and enjoy your time!</p>
+		        <button class="action-btn" onclick="switchTab('movies')">Start Watching</button>
+		    </div>
+		</div>
         
         <div style="padding: 0 50px;">
             <h2 class="section-title">Trending Now</h2>
@@ -690,7 +695,7 @@ const mediaDatabase = [
                 slides[currentSlide].classList.remove('active');
                 currentSlide = (currentSlide + 1) % slides.length;
                 slides[currentSlide].classList.add('active');
-            }, 5000);
+            }, 3000);
         }
     }
 </script>
