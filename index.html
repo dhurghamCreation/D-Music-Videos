@@ -558,35 +558,36 @@
     <div id="debug-log"></div>
 <script>
     /* --- 1. CONFIGURATION --- */
-    const mediaDatabase = [
-        { name: "Run (FIFA 17)", video: "music/run_small.mp4", image: "images/run.png", desc: "High Energy" },
-        { name: "Raging", video: "music/Raging_small.mp4", image: "images/raging.png", desc: "Kygo" },
-        { name: "ZHU - Faded", video: "music/ZHU_small.mp4", image: "images/zhu.png", desc: "Deep House" },
-        { name: "Shelter", video: "music/Shelter_small.mp4", image: "images/shelter.png", desc: "Porter Robinson" },
-        { name: "Mexican Song", video: "music/Mexican_song_small.mp4", image: "images/Mexican_song.png", desc: "Local Favorite" },
-        { name: "Digitalism", video: "music/Digitalism_small.mp4", image: "images/Digitalism.png", desc: "Electronic Beats" },
-        { name: "Vera i Nadezehda", video: "music/Vera_i_Nadezehda_small.mp4", image: "images/stadium_bg.png", desc: "Special Track" }
-    ];
+    /* --- 1. CONFIGURATION (Case-Sensitive matched to your 'ls' output) --- */
+const mediaDatabase = [
+    { name: "Run (FIFA 17)", video: "music/run_small.mp4", image: "images/run.png", desc: "High Energy" },
+    { name: "Raging", video: "music/Raging_small.mp4", image: "images/raging.png", desc: "Kygo" },
+    { name: "Digitalism", video: "music/Digitalism_small.mp4", image: "images/Digitalism.png", desc: "Electronic Beats" },
+    { name: "Shelter", video: "music/Shelter_small.mp4", image: "images/shelter.png", desc: "Porter Robinson" },
+    { name: "Mexican Song", video: "music/Mexican_song_small.mp4", image: "images/Compass.png", desc: "Local Favorite" },
+    { name: "Vera i Nadezehda", video: "music/Vera_i_Nadezehda_small.mp4", image: "images/stadium_pg.png", desc: "Special Track" }
+];
 
-    /* --- 2. THEATRE MODE ENGINE (FIXED VERSION) --- */
-    function launchCinemaMode(url, title) {
+/* --- 2. THEATRE MODE ENGINE (Raw Link Fix) --- */
+	function launchCinemaMode(url, title) {
 	    console.log("System Loading Path:", url);
 	    const videoElement = document.getElementById('mainVideo');
 	    const playerContainer = document.getElementById('cinemaPlayer');
 	    
-	    // This bypasses the LFS local cache issue
-	    const rawGitHubUrl = "https://raw.githubusercontent.com/dhurghamCreation/D-Music-Videos/main/" + encodeURI(url);
+	    // This Raw link tells GitHub to send the 2.2MB file directly, not the LFS pointer
+	    const rawUrl = "https://raw.githubusercontent.com/dhurghamCreation/D-Music-Videos/main/" + encodeURI(url);
 	    
 	    videoElement.pause();
-	    videoElement.src = rawGitHubUrl; 
+	    videoElement.src = rawUrl; 
 	    videoElement.load(); 
 	
 	    document.getElementById('playerTrackTitle').innerText = title;
 	    playerContainer.style.display = 'flex';
 	    
 	    videoElement.play().catch(e => {
-	        console.error("Playback stalled:", e);
-	        alert("Please click the video to start playback (Browser Security)");
+	        console.error("Playback failed:", e);
+	        // Note: Browsers require you to click once on the page to allow audio
+	        console.log("Browser blocked autoplay. User must click to hear sound.");
 	    });
 	}
     function exitCinemaMode() {
