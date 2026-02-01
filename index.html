@@ -24,6 +24,9 @@
 			--gold: #D4AF37;
             --premium-red: #ff0000;
             --dark-glass: rgba(0, 0, 0, 0.85);
+			--gold-gradient: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
+			--gold-glow: rgba(212, 175, 55, 0.4);
+    		--transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 		.film-container {
             display: grid;
@@ -170,6 +173,9 @@
             background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
             z-index: 1000;
             transition: background 0.3s;
+			backdrop-filter: blur(20px) saturate(180%);
+		    background: rgba(0, 0, 0, 0.75);
+		    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         nav.scrolled { background: var(--deep-black); }
@@ -286,9 +292,14 @@
             transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-style: preserve-3d;
 			pointer-events: auto !important;
+			border: 1px solid rgba(255, 255, 255, 0.1);
+    		transition: var(--transition);
+			
         }
 
-        .card:hover .card-inner { transform: rotateY(180deg); }
+        .card:hover .card-inner { transform: rotateY(180deg) translateY(-10px); /* Lifts the card while flipping */
+	    border-color: var(--primary-gold);
+	    box-shadow: 0 20px 40px var(--gold-glow); }
 
         .card-front, .card-back {
             position: absolute;
@@ -351,7 +362,9 @@
             align-items: center;
         }
 
-        video { width: 90%; max-width: 1200px; outline: none; border: 2px solid #333; box-shadow: 0 0 50px rgba(255,255,255,0.1); }
+        video { width: 90%; max-width: 1200px; outline: none; border: 2px solid #333; box-shadow: 0 0 50px rgba(255,255,255,0.1);border-radius: 15px;
+	    border: 1px solid var(--primary-gold);
+	    box-shadow: 0 0 100px rgba(0,0,0,1), 0 0 30px rgba(212, 175, 55, 0.2); }
 
         .player-controls { margin-top: 20px; display: flex; gap: 20px; }
         .close-btn { background: var(--primary-red); border: none; padding: 10px 30px; color: white; cursor: pointer; font-size: 1.2rem; border-radius: 4px; }
@@ -537,11 +550,7 @@
 
     <div id="series" class="section-container">
         <h2 class="section-title">TV Series</h2>
-		 <div class="film-container">
-	        
-	
-	        
-	
+		 <div class="film-container">	
 	        
 	    </div>
         
@@ -587,6 +596,9 @@ const mediaDatabase = [
         const loginOverlay = document.getElementById('login-overlay');
 
         if (user === "gd" && pass === "123") {
+			// Add this inside your attemptLogin "if" block:
+			document.getElementById('login-overlay').style.transform = "scale(1.1)";
+			document.getElementById('login-overlay').style.opacity = "0";
             loginOverlay.style.transition = "opacity 0.8s ease";
             loginOverlay.style.opacity = '0';
             setTimeout(() => {
@@ -645,28 +657,30 @@ const mediaDatabase = [
     }
 
     function renderLibrary() {
-        const moviesGrid = document.getElementById('movies-grid');
-        if (!moviesGrid) return;
-        
-        moviesGrid.innerHTML = '';
-        mediaDatabase.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            // Important: This click event is attached to the whole card
-            card.onclick = () => launchCinemaMode(item.video, item.name);
-            
-            card.innerHTML = `
-               <div class="card-inner">
-			        <div class="card-front">
-			            <img src="${item.image}" alt="${item.name}">
-			        </div>
-			        <div class="card-back">
-			            <h2>PLAY</h2>
-			        </div>
-			    </div>`;
-            moviesGrid.appendChild(card);
-        });
-    }
+	    const moviesGrid = document.getElementById('movies-grid');
+	    if (!moviesGrid) return;
+	    
+	    moviesGrid.innerHTML = '';
+	    mediaDatabase.forEach(item => {
+	        const card = document.createElement('div');
+	        card.className = 'card';
+	        card.onclick = () => launchCinemaMode(item.video, item.name);
+	        
+	        card.innerHTML = `
+	           <div class="card-inner">
+	                <div class="card-front">
+	                    <img src="${item.image}" alt="${item.name}">
+	                </div>
+	                <div class="card-back">
+	                    <h2 style="color:var(--primary-gold)">${item.name}</h2>
+	                    <p style="margin: 15px 0; opacity: 0.7;">SIGNATURE EDITION</p>
+	                    <div style="font-size: 2.5rem; margin-top: 10px;">▶</div>
+	                    <p style="font-size: 0.8rem; letter-spacing: 2px; margin-top: 20px;">WATCH NOW</p>
+	                </div>
+	            </div>`;
+	        moviesGrid.appendChild(card);
+	    });
+	}
 
     function initSlideshow() {
         const slides = document.querySelectorAll('.slide');
