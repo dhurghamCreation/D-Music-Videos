@@ -645,19 +645,18 @@
 	
 	    window.scrollTo(0, 0); 
 	}
-	function renderLibrary() {
-	    // 1. Define both targets
+	
+    function renderLibrary() {
 	    const moviesGrid = document.getElementById('movies-grid');
 	    const seriesGrid = document.querySelector('#series .film-container');
 	
-	    // 2. Clear both (if they exist)
 	    if (moviesGrid) moviesGrid.innerHTML = '';
 	    if (seriesGrid) seriesGrid.innerHTML = '';
 	
 	    mediaDatabase.forEach(item => {
+	        // 1. Create the base card structure
 	        const card = document.createElement('div');
 	        card.className = 'card';
-	        card.onclick = () => launchCinemaMode(item.video, item.name);
 	        card.innerHTML = `
 	            <div class="card-inner">
 	                <div class="card-front">
@@ -669,21 +668,21 @@
 	                </div>
 	            </div>`;
 	        
-	        // 3. Logic: Put EVERYTHING in Movies, but only specific items in Series
-	       if (moviesGrid) {
-	            moviesGrid.appendChild(card.cloneNode(true)); 
-	       }
+	        // 2. Add to Movies Tab with a FRESH click event
+	        if (moviesGrid) {
+	            const movieCard = card.cloneNode(true);
+	            movieCard.onclick = () => launchCinemaMode(item.video, item.name);
+	            moviesGrid.appendChild(movieCard);
+	        }
 	        
-	        // If the item name is one of your films, add it to the Series tab too
-	       if (seriesGrid && ["Cars", "Horton", "Kung Fu Panda 3"].includes(item.name)) {
-            // Re-bind the click event because cloneNode doesn't copy listeners
+	        // 3. Add to TV Series Tab with a FRESH click event
+	        if (seriesGrid && ["Cars", "Horton", "Kung Fu Panda 3"].includes(item.name)) {
 	            const seriesCard = card.cloneNode(true);
 	            seriesCard.onclick = () => launchCinemaMode(item.video, item.name);
 	            seriesGrid.appendChild(seriesCard);
-	       }
+	        }
 	    });
 	}
-    
     function initSlideshow() {
         const slides = document.querySelectorAll('.slide');
         let currentSlide = 0;
