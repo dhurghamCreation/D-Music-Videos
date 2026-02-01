@@ -43,9 +43,9 @@
         }
 
         /* Backgrounds for specific films */
-        .card-cars { background: url('images/Cars 2.png') center/cover; }
-        .card-horton { background: url('images/Horton.png') center/cover; }
-        .card-panda { background: url('images/Kung Fu Panda 3.png') center/cover; }
+        .card-cars { background: url('images/Cars 2.png') center/cover !important;; }
+        .card-horton { background: url('images/Horton.png') center/cover !important;; }
+        .card-panda { background: url('images/Kung Fu Panda 3.png') center/cover !important;; }
 
         .film-card:hover {
             transform: scale(1.05);
@@ -186,17 +186,20 @@
 	    .nav-links li {
 		    cursor: pointer;
 		    color: white;
-		    padding: 10px 25px;
+		    padding: 10px 20px;
+		    border-radius: 50px; /* Pill shape */
 		    border: 1px solid var(--primary-red);
-		    border-radius: 50px; /* Makes them pills */
-		    transition: 0.3s;
+		    transition: all 0.3s ease;
+		    text-transform: uppercase;
+		    font-weight: bold;
+		    letter-spacing: 1px;
 		    background: rgba(0,0,0,0.5);
 		}
 	
 		.nav-links li:hover {
 		    background: var(--primary-red);
-		    box-shadow: 0 0 15px var(--primary-red);
-		    transform: scale(1.1);
+		    transform: translateY(-3px); /* Small lift animation */
+		    box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
 		}
 
         
@@ -578,15 +581,15 @@
     const imgRoot = "images/";
 
     const mediaDatabase = [
-        { name: "Run (FIFA 17)", video: mediaRoot + "run.mp4", image: imgRoot + "Run.png", desc: "High Energy Track" },
-        { name: "Raging", video: mediaRoot + "Raging.mp4", image: imgRoot + "Raging.png", desc: "Kygo & Kodaline" },
-        { name: "ZHU - Faded", video: mediaRoot + "ZHU.mp4", image: imgRoot + "ZHU.png", desc: "Deep House Classic" },
-        { name: "Shelter", video: mediaRoot + "Shelter.mp4", image: imgRoot + "Shelter.png", desc: "Porter Robinson" },
-        { name: "Mexican Song", video: mediaRoot + "Mexican_song.mp4", image: imgRoot + "Compass.png", desc: "Local Favorite" },
-        { name: "Digitalism", video: mediaRoot + "Digitalism.mp4", image: imgRoot + "Digitalism.png", desc: "Electronic Beats" },
-        { name: "Cars", video: mediaRoot + "Cars.mp4", image: imgRoot + "Cars 2.png", desc: "Disney Pixar Classic" }, // Updated image name
-        { name: "Horton", video: mediaRoot + "Horton.mp4", image: imgRoot + "horton.png", desc: "Signature Film" },
-        { name: "Kung Fu Panda 3", video: mediaRoot + "KungFuPanda3.mp4", image: imgRoot + "panda.png", desc: "Dreamworks Elite" }
+        { name: "Run (FIFA 17)", video: mediaRoot + "run_small.mp4", image: imgRoot + "Run.png", desc: "High Energy Track" },
+        { name: "Raging", video: mediaRoot + "Raging_small.mp4", image: imgRoot + "Raging.png", desc: "Kygo & Kodaline" },
+        { name: "ZHU - Faded", video: mediaRoot + "ZHU_small.mp4", image: imgRoot + "ZHU.png", desc: "Deep House Classic" },
+        { name: "Shelter", video: mediaRoot + "Shelter_small.mp4", image: imgRoot + "Shelter.png", desc: "Porter Robinson" },
+        { name: "Mexican Song", video: mediaRoot + "Mexican_song_small.mp4", image: imgRoot + "Compass.png", desc: "Local Favorite" },
+        { name: "Digitalism", video: mediaRoot + "Digitalism_small.mp4", image: imgRoot + "Digitalism.png", desc: "Electronic Beats" },
+        { name: "Cars", video: mediaRoot + "Cars_small.mp4", image: imgRoot + "Cars 2.png", desc: "Disney Pixar Classic" }, // Updated image name
+        { name: "Horton", video: mediaRoot + "Horton_small.mp4", image: imgRoot + "Horton.png", desc: "Signature Film" },
+        { name: "Kung Fu Panda 3", video: mediaRoot + "KungFuPanda3_small.mp4", image: imgRoot + "Kung Fu Panda 3.png", desc: "Dreamworks Elite" }
     ];
 
     /* --- 1. LOGIN SYSTEM --- */
@@ -608,6 +611,7 @@
             alert("ACCESS DENIED");
         }
     }
+	function playFilm(url) { launchCinemaMode(url, "Playing Feature"); }
 
     /* --- 2. THEATRE MODE ENGINE --- */
     function launchCinemaMode(url, title) {
@@ -632,27 +636,33 @@
     }
 
     /* --- 3. TAB & LIBRARY LOGIC --- */
-	    function switchTab(tabId) {
-	    // 1. Hide every single section container
-		    document.querySelectorAll('.section-container, .film-container, .header-premium, #hero-slider').forEach(el => {
-		        el.style.display = 'none';
-		        el.classList.remove('active');
-		    });
-		
-		    // 2. Show only the specific section you clicked
-		    const target = document.getElementById(tabId);
-		    if (target) {
-		        target.style.display = 'block';
-		        target.classList.add('active');
-		    }
-		
-		    // 3. Special Case: Only show the film images if we are on 'series'
-		    const filmContainer = document.querySelector('.film-container');
-		    filmContainer.style.display = (tabId === 'series') ? 'grid' : 'none';
-		
-		    window.scrollTo(0, 0); // Jump to top to feel like a new page
-		}
-
+	    
+	function switchTab(tabId) {
+	    // 1. Hide all main containers
+	    document.querySelectorAll('.section-container').forEach(el => {
+	        el.style.display = 'none';
+	        el.classList.remove('active');
+	    });
+	
+	    // 2. Show the specific tab
+	    const target = document.getElementById(tabId);
+	    if (target) {
+	        target.style.display = 'block';
+	        target.classList.add('active');
+	    }
+	
+	    // 3. Dedicated Content Logic:
+	    // Only show slider on Home. Only show Film Container on Series.
+	    document.getElementById('hero-slider').style.display = (tabId === 'home') ? 'block' : 'none';
+	    
+	    // This finds the film cards inside the series tab
+	    const filmContainer = document.querySelector('#series .film-container');
+	    if (filmContainer) {
+	        filmContainer.style.display = (tabId === 'series') ? 'grid' : 'none';
+	    }
+	
+	    window.scrollTo(0, 0); 
+	}
     function renderLibrary() {
         const grid = document.getElementById('movies-grid');
         if(!grid) return;
@@ -663,18 +673,8 @@
             card.className = 'card';
             card.onclick = () => launchCinemaMode(item.video, item.name);
             card.innerHTML = `
-                <div class="card-inner">
-                    <div class="card-front">
-                        <img src="${item.image}" onerror="this.src='https://via.placeholder.com/300x400/222/ffd700?text=${item.name}'" alt="${item.name}">
-                        <div style="position:absolute; bottom:0; background:rgba(0,0,0,0.8); width:100%; padding:10px;">
-                            <h4>${item.name}</h4>
-                        </div>
-                    </div>
-                    <div class="card-back" style="background: linear-gradient(45deg, #000, #E50914);">
-                        <h2>PLAY</h2>
-                        <p>${item.desc}</p>
-                    </div>
-                </div>`;
+                // Replace the img tag inside the card.innerHTML template with this:
+				<img src="${item.image}" alt="${item.name}" style="width:100%; height:100%; object-fit:cover;">
             grid.appendChild(card);
         });
     }
