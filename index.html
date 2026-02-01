@@ -597,27 +597,28 @@
 
     /* --- 2. THEATRE MODE ENGINE --- */
     function launchCinemaMode(url, title) {
-        console.log("Click detected! Attempting to play:", url);
-        const videoElement = document.getElementById('mainVideo');
-        const playerContainer = document.getElementById('cinemaPlayer');
-        
-        videoElement.pause();
-        
-        // We add the "./" to make sure the browser knows to look 
-        // in the current folder's subdirectories.
-        videoElement.src = "./" + url; 
-        
-        videoElement.load();
-        
-        document.getElementById('playerTrackTitle').innerText = title;
-        playerContainer.style.display = 'flex';
-        
-        videoElement.play().catch(e => {
-            console.error("Playback failed. Path tried: " + url);
-            // This alert triggers if the file is a 0KB LFS pointer
-            alert("Error: The file '" + url + "' is empty (0KB) on this server. Run 'git lfs pull' in your terminal.");
-        });
-    }
+	    console.log("Attempting to play:", url);
+	    const videoElement = document.getElementById('mainVideo');
+	    const playerContainer = document.getElementById('cinemaPlayer');
+	    
+	    // Add a cache-buster (?v=1) to force the browser to look past the 0KB cache
+	    const videoUrl = "./" + url + "?v=" + Date.now();
+	
+	    videoElement.pause();
+	    videoElement.src = videoUrl; 
+	    videoElement.load(); // Force the browser to re-check the file size
+	    
+	    document.getElementById('playerTrackTitle').innerText = title;
+	    playerContainer.style.display = 'flex';
+	    
+	    // Attempt to play with a small delay to allow the 'load()' to register
+	    setTimeout(() => {
+	        videoElement.play().catch(e => {
+	            console.error("Path failed:", videoUrl, e);
+	            alert("Streaming Error: The file at " + url + " is either missing or still an empty LFS pointer. Run 'git lfs pull' and 'git push' again.");
+	        });
+	    }, 100);
+	}
 
     function exitCinemaMode() {
         const videoElement = document.getElementById('mainVideo');
