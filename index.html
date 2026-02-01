@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D-Cinema | Ultimate Signature Edition</title>
     <style>
-        /* --- 1. CORE VARIABLES & RESET --- */
+        
         :root {
             --primary-gold: #FFD700;
             --primary-red: #E50914;
@@ -29,7 +29,7 @@
             height: 100vh;
         }
 
-        /* --- 2. LOGIN OVERLAY SYSTEM (The Gate) --- */
+        
         #login-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -89,7 +89,7 @@
 
         .login-btn:hover { background: #ff1f1f; transform: scale(1.02); }
 
-        /* --- 3. MAIN NAVIGATION (Glassmorphism) --- */
+        
         nav {
             position: fixed;
             top: 0;
@@ -117,7 +117,7 @@
         .nav-links li { cursor: pointer; color: var(--text-dim); transition: 0.3s; font-size: 1rem; }
         .nav-links li:hover, .nav-links li.active { color: white; font-weight: bold; }
 
-        /* --- 4. HERO SECTION (Sliding Images) --- */
+        
         #hero-slider {
             height: 80vh;
             width: 100%;
@@ -159,10 +159,10 @@
         }
         .action-btn:hover { background: white; color: black; }
 
-        /* --- 5. CONTENT SECTIONS (Grid System) --- */
+        
         .section-container {
             padding: 50px;
-            display: none; /* Hidden by default, JS toggles this */
+            display: none; 
             animation: slideUp 0.6s ease;
             min-height: 100vh;
         }
@@ -182,12 +182,12 @@
             gap: 20px;
         }
 
-        /* --- 6. ADVANCED FLIP CARDS (For Shop & Movies) --- */
+       
         .card {
             background-color: transparent;
             width: 100%;
             height: 400px;
-            perspective: 1000px; /* Essential for 3D flip */
+            perspective: 1000px; 
             cursor: pointer;
         }
 
@@ -239,7 +239,7 @@
             padding: 20px;
         }
 
-        /* Special Animation for "Shop" Items */
+        
         .shop-letter {
             font-size: 8rem;
             font-weight: 900;
@@ -249,7 +249,7 @@
             animation: float 3s ease-in-out infinite;
         }
 
-        /* --- 7. CINEMA PLAYER OVERLAY --- */
+        
         #cinemaPlayer {
             position: fixed;
             top: 0; left: 0;
@@ -275,7 +275,7 @@
             opacity: 0.5;
         }
 
-        /* --- 8. DEBUG CONSOLE (Legacy Support) --- */
+       
         #debug-log {
             position: fixed;
             bottom: 20px;
@@ -290,7 +290,7 @@
             max-width: 300px;
         }
 
-        /* --- ANIMATION KEYFRAMES --- */
+        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
@@ -430,7 +430,7 @@
 
     <script>
 	const myLiveTunnel = "https://finite-machinery-basic-earlier.trycloudflare.com/";
-        /* --- CONFIGURATION & DATABASE --- */
+        
         const mediaDatabase = [
             { name: "Run (FIFA 17)", video: myLiveTunnel + "music/run.mp4", image: "images/Run.png", desc: "High Energy Track" },
             { name: "Raging", video: myLiveTunnel + "music/Raging.mp4", image: "images/Raging.png", desc: "Kygo & Kodaline" },
@@ -444,7 +444,7 @@
         /* --- 1. LOGIN SYSTEM --- */
         function attemptLogin() {
             const user = document.getElementById('username').value;
-            // Simple mock authentication - In a real app, this would check a database
+            
             if (user.length > 0) {
                 document.getElementById('login-overlay').style.display = 'none';
                 initSlideshow();
@@ -455,17 +455,17 @@
             }
         }
 
-        /* --- 2. NAVIGATION LOGIC --- */
+        
         function switchTab(tabId) {
-            // Hide all sections
+           
             document.querySelectorAll('.section-container').forEach(el => el.classList.remove('active'));
-            // Remove active class from nav links
+          
             document.querySelectorAll('.nav-links li').forEach(el => el.classList.remove('active'));
             
-            // Show selected
+            
             document.getElementById(tabId).classList.add('active');
             
-            // Highlight nav item (simple loop)
+            
             const links = document.querySelectorAll('.nav-links li');
             if(tabId === 'home') links[0].classList.add('active');
             if(tabId === 'movies') links[1].classList.add('active');
@@ -484,16 +484,16 @@
                 slides[currentSlide].classList.remove('active');
                 currentSlide = (currentSlide + 1) % slides.length;
                 slides[currentSlide].classList.add('active');
-            }, 5000); // Change slide every 5 seconds
+            }, 5000); 
         }
 
-        /* --- 4. RENDER MEDIA GRID (Dynamic Generation) --- */
+        
         function renderLibrary() {
             const grid = document.getElementById('movies-grid');
-            grid.innerHTML = ''; // Clear existing
+            grid.innerHTML = ''; 
 
             mediaDatabase.forEach(item => {
-                // Create the Card Structure dynamically
+               
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => launchCinemaMode(item.video, item.name);
@@ -517,13 +517,13 @@
             });
         }
 
-        /* --- 5. PLAYER ENGINE (With Cache Buster & Error Handling) --- */
+        
         const videoElement = document.getElementById('mainVideo');
 
         function launchCinemaMode(url, title) {
             document.getElementById('playerTrackTitle').innerText = title;
             
-            // CACHE BUSTER: This fixes the Cloudflare/WSL sync issue
+            
             const timestamp = new Date().getTime();
             const safeUrl = url.includes('?') ? `${url}&t=${timestamp}` : `${url}?t=${timestamp}`;
 
@@ -551,13 +551,13 @@
             videoElement.src = "";
         }
 
-        /* --- 6. DEFENSIVE CODE BLOCKS (Legacy & Safety) --- */
+       
         function safetyProtocol() {
             console.log("%c D-Cinema System Initialization Complete...", "color: gold; font-size: 14px;");
             console.log("Current Theme: Dhrg Signature Edition (Ultimate)");
             console.log("Target Directory: /wsl$/Ubuntu-22.04/home/dhuny/media-server/music/");
             
-            // Check for scroll events to style nav
+            
             window.addEventListener('scroll', () => {
                 const nav = document.getElementById('navbar');
                 if (window.scrollY > 50) nav.classList.add('scrolled');
