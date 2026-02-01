@@ -557,40 +557,51 @@
 
     <div id="debug-log"></div>
 <script>
-    /* --- PATH CONFIGURATION --- */
-    // Using relative paths so it works on both GitHub and Localhost
-    const mediaRoot = "music/"; 
-    const imgRoot = "images/";
-
+    /* --- 1. CONFIGURATION --- */
     const mediaDatabase = [
-	    { name: "Run (FIFA 17)", video: "music/run_small.mp4", image: "images/run.png", desc: "High Energy" },
-	    { name: "Raging", video: "music/Raging_small.mp4", image: "images/Raging.png", desc: "Kygo" },
-	    { name: "ZHU - Faded", video: "music/ZHU_small.mp4", image: "images/ZHU.png", desc: "Deep House" },
-	    { name: "Shelter", video: "music/Shelter_small.mp4", image: "images/Shelter.png", desc: "Porter Robinson" },
-	    { name: "Mexican Song", video: "music/Mexican_song_small.mp4", image: "images/Compass.png", desc: "Local Favorite" },
-	    { name: "Digitalism", video: "music/Digitalism_small.mp4", image: "images/Digitalism.png", desc: "Electronic Beats" },
-	    { name: "Vera i Nadezehda", video: "music/Vera i Nadezehda_small.mp4", image: "images/vera.png", desc: "Special Track" }
-	];
+        { name: "Run (FIFA 17)", video: "music/run_small.mp4", image: "images/run.png", desc: "High Energy" },
+        { name: "Raging", video: "music/Raging_small.mp4", image: "images/Raging.png", desc: "Kygo" },
+        { name: "ZHU - Faded", video: "music/ZHU_small.mp4", image: "images/ZHU.png", desc: "Deep House" },
+        { name: "Shelter", video: "music/Shelter_small.mp4", image: "images/Shelter.png", desc: "Porter Robinson" },
+        { name: "Mexican Song", video: "music/Mexican_song_small.mp4", image: "images/Mexican_song.png", desc: "Local Favorite" },
+        { name: "Digitalism", video: "music/Digitalism_small.mp4", image: "images/Digitalism.png", desc: "Electronic Beats" },
+        { name: "Vera i Nadezehda", video: "music/Vera i Nadezehda_small.mp4", image: "images/vera.png", desc: "Special Track" }
+    ];
 
-	function launchCinemaMode(url, title) {
-	    const videoElement = document.getElementById('mainVideo');
-	    const playerContainer = document.getElementById('cinemaPlayer');
-	    
-	    // We encode the URL to handle the spaces in "Vera i Nadezehda"
-	    const encodedUrl = encodeURI(url);
-	    
-	    videoElement.pause();
-	    videoElement.src = "./" + encodedUrl; 
-	    videoElement.load(); 
-	
-	    playerContainer.style.display = 'flex';
-	    
-	    videoElement.play().catch(e => {
-	        console.error("Playback failed:", e);
-	        alert("The video is there, but the browser is blocking it. Click the video to start!");
-	    });
-	}
-    /* --- 1. LOGIN SYSTEM --- */
+    /* --- 2. THEATRE MODE ENGINE (FIXED VERSION) --- */
+    function launchCinemaMode(url, title) {
+        console.log("System Loading Path:", url);
+        const videoElement = document.getElementById('mainVideo');
+        const playerContainer = document.getElementById('cinemaPlayer');
+        
+        // 1. Fix the space issue for Vera i Nadezehda
+        const safeUrl = encodeURI(url);
+        
+        // 2. Prepare the Player
+        videoElement.pause();
+        // We use ./ to ensure it stays in your repository root
+        videoElement.src = "./" + safeUrl; 
+        videoElement.load(); 
+
+        document.getElementById('playerTrackTitle').innerText = title;
+        playerContainer.style.display = 'flex';
+        
+        // 3. Play logic with Browser Security handling
+        videoElement.play().catch(e => {
+            console.error("Playback stalled:", e);
+            // We removed the annoying alert so it doesn't interrupt you
+            console.log("Note: Browser requires a user click to play audio.");
+        });
+    }
+
+    function exitCinemaMode() {
+        const videoElement = document.getElementById('mainVideo');
+        document.getElementById('cinemaPlayer').style.display = 'none';
+        videoElement.pause();
+        videoElement.src = ""; 
+    }
+
+    /* --- 3. LOGIN & SYSTEM INITIALIZATION --- */
     function attemptLogin() {
         const user = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
@@ -603,108 +614,54 @@
                 loginOverlay.style.display = 'none';
                 initSlideshow();
                 renderLibrary();
-                safetyProtocol();
             }, 800);
         } else {
             alert("ACCESS DENIED");
         }
     }
-	function playFilm(url) { launchCinemaMode(url, "Playing Feature"); }
 
-    /* --- 2. THEATRE MODE ENGINE --- */
-    function launchCinemaMode(url, title) {
-	    console.log("Attempting to play:", url);
-	    const videoElement = document.getElementById('mainVideo');
-	    const playerContainer = document.getElementById('cinemaPlayer');
-	    
-	    // Add a cache-buster (?v=1) to force the browser to look past the 0KB cache
-	    const videoUrl = "./" + url + "?v=" + Date.now();
-	
-	    videoElement.pause();
-	    videoElement.src = videoUrl; 
-	    videoElement.load(); // Force the browser to re-check the file size
-	    
-	    document.getElementById('playerTrackTitle').innerText = title;
-	    playerContainer.style.display = 'flex';
-	    
-	    // Attempt to play with a small delay to allow the 'load()' to register
-	    setTimeout(() => {
-	        videoElement.play().catch(e => {
-	            console.error("Path failed:", videoUrl, e);
-	            alert("Streaming Error: The file at " + url + " is either missing or still an empty LFS pointer. Run 'git lfs pull' and 'git push' again.");
-	        });
-	    }, 100);
-	}
+    /* --- 4. UI RENDERING --- */
+    function switchTab(tabId) {
+        document.querySelectorAll('.section-container').forEach(el => {
+            el.style.display = 'none';
+            el.classList.remove('active');
+        });
 
-    function exitCinemaMode() {
-        const videoElement = document.getElementById('mainVideo');
-        document.getElementById('cinemaPlayer').style.display = 'none';
-        videoElement.pause();
-        videoElement.src = ""; // Clear source to stop buffering
+        const target = document.getElementById(tabId);
+        if (target) {
+            target.style.display = 'block';
+            target.classList.add('active');
+        }
+
+        document.getElementById('hero-slider').style.display = (tabId === 'home') ? 'block' : 'none';
+        window.scrollTo(0, 0); 
     }
 
-    /* --- 3. TAB & LIBRARY LOGIC --- */
-	    
-	function switchTab(tabId) {
-	    // 1. Hide all main containers
-	    document.querySelectorAll('.section-container').forEach(el => {
-	        el.style.display = 'none';
-	        el.classList.remove('active');
-	    });
-	
-	    // 2. Show the specific tab
-	    const target = document.getElementById(tabId);
-	    if (target) {
-	        target.style.display = 'block';
-	        target.classList.add('active');
-	    }
-	
-	    // 3. Dedicated Content Logic:
-	    // Only show slider on Home. Only show Film Container on Series.
-	    document.getElementById('hero-slider').style.display = (tabId === 'home') ? 'block' : 'none';
-	    
-	    // This finds the film cards inside the series tab
-	    const filmContainer = document.querySelector('#series .film-container');
-	    if (filmContainer) {
-	        filmContainer.style.display = (tabId === 'series') ? 'grid' : 'none';
-	    }
-	
-	    window.scrollTo(0, 0); 
-	}
-	
     function renderLibrary() {
-	    const moviesGrid = document.getElementById('movies-grid');
-	    const seriesGrid = document.querySelector('#series .film-container');
-	
-	    if (moviesGrid) moviesGrid.innerHTML = '';
-	    if (seriesGrid) seriesGrid.innerHTML = '';
-	
-	    mediaDatabase.forEach(item => {
-	        // 1. Create the base card structure
-	        const card = document.createElement('div');
-	        card.className = 'card';
-	        card.innerHTML = `
-	            <div class="card-inner">
-	                <div class="card-front">
-	                    <img src="${item.image}" alt="${item.name}" style="width:100%; height:100%; object-fit:cover;">
-	                </div>
-	                <div class="card-back" style="background: linear-gradient(45deg, #000, #E50914);">
-	                    <h2>PLAY</h2>
-	                    <p>${item.desc}</p>
-	                </div>
-	            </div>`;
-	        
-	        // 2. Add to Movies Tab with a FRESH click event
-	        if (moviesGrid) {
-	            const movieCard = card.cloneNode(true);
-	            movieCard.onclick = () => launchCinemaMode(item.video, item.name);
-	            moviesGrid.appendChild(movieCard);
-	        }
-	        
-	        // 3. Add to TV Series Tab with a FRESH click event
-	        
-	    });
-	}
+        const moviesGrid = document.getElementById('movies-grid');
+        if (!moviesGrid) return;
+        
+        moviesGrid.innerHTML = '';
+        mediaDatabase.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            // Important: This click event is attached to the whole card
+            card.onclick = () => launchCinemaMode(item.video, item.name);
+            
+            card.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-front">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/300x450?text=Image+Error'">
+                    </div>
+                    <div class="card-back" style="background: linear-gradient(45deg, #000, #E50914);">
+                        <h2>PLAY</h2>
+                        <p>${item.desc}</p>
+                    </div>
+                </div>`;
+            moviesGrid.appendChild(card);
+        });
+    }
+
     function initSlideshow() {
         const slides = document.querySelectorAll('.slide');
         let currentSlide = 0;
@@ -716,11 +673,6 @@
             }, 5000);
         }
     }
-
-    function safetyProtocol() {
-        console.log("D-Cinema Gold: System Online.");
-    }
 </script>
-    
 </body>
 </html>
