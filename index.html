@@ -561,20 +561,21 @@
 
     <div id="debug-log"></div>
 <script>
-    /* --- DIRECT LOCAL ACCESS (No Cloudflare) --- */
-    // Change 'localhost' to your Ubuntu IP if accessing from another device
-    const localMediaRoot = "music/";
+    /* --- PATH CONFIGURATION --- */
+    // Using relative paths so it works on both GitHub and Localhost
+    const mediaRoot = "music/"; 
+    const imgRoot = "images/";
 
     const mediaDatabase = [
-        { name: "Run (FIFA 17)", video: localMediaRoot + "music/run.mp4", image: "images/Run.png", desc: "High Energy Track" },
-        { name: "Raging", video: localMediaRoot + "music/Raging.mp4", image: "images/Raging.png", desc: "Kygo & Kodaline" },
-        { name: "ZHU - Faded", video: localMediaRoot + "music/ZHU.mp4", image: "images/ZHU.png", desc: "Deep House Classic" },
-        { name: "Shelter", video: localMediaRoot + "music/Shelter.mp4", image: "images/Shelter.png", desc: "Porter Robinson" },
-        { name: "Mexican Song", video: localMediaRoot + "music/Mexican_song.mp4", image: "images/Compass.png", desc: "Local Favorite" },
-        { name: "Digitalism", video: localMediaRoot + "music/Digitalism.mp4", image: "images/Digitalism.png", desc: "Electronic Beats" },
-        { name: "Cars", video: localMediaRoot + "music/Cars.mp4", image: "images/Cars.png", desc: "Disney Pixar Classic" },
-        { name: "Horton", video: localMediaRoot + "music/Horton.mp4", image: "images/Horton.png", desc: "Signature Film" },
-        { name: "Kung Fu Panda 3", video: localMediaRoot + "music/KungFuPanda3.mp4", image: "images/panda.png", desc: "Dreamworks Elite" }
+        { name: "Run (FIFA 17)", video: mediaRoot + "run.mp4", image: imgRoot + "Run.png", desc: "High Energy Track" },
+        { name: "Raging", video: mediaRoot + "Raging.mp4", image: imgRoot + "Raging.png", desc: "Kygo & Kodaline" },
+        { name: "ZHU - Faded", video: mediaRoot + "ZHU.mp4", image: imgRoot + "ZHU.png", desc: "Deep House Classic" },
+        { name: "Shelter", video: mediaRoot + "Shelter.mp4", image: imgRoot + "Shelter.png", desc: "Porter Robinson" },
+        { name: "Mexican Song", video: mediaRoot + "Mexican_song.mp4", image: imgRoot + "Compass.png", desc: "Local Favorite" },
+        { name: "Digitalism", video: mediaRoot + "Digitalism.mp4", image: imgRoot + "Digitalism.png", desc: "Electronic Beats" },
+        { name: "Cars", video: mediaRoot + "Cars.mp4", image: imgRoot + "Cars 2.png", desc: "Disney Pixar Classic" }, // Updated image name
+        { name: "Horton", video: mediaRoot + "Horton.mp4", image: imgRoot + "horton.png", desc: "Signature Film" },
+        { name: "Kung Fu Panda 3", video: mediaRoot + "KungFuPanda3.mp4", image: imgRoot + "panda.png", desc: "Dreamworks Elite" }
     ];
 
     /* --- 1. LOGIN SYSTEM --- */
@@ -608,7 +609,7 @@
         
         videoElement.load();
         videoElement.play().catch(e => {
-            console.error("Local Load Failed. Ensure your Python/Apache server is running.");
+            console.error("Playback failed. Check if the file exists at: " + url);
         });
     }
 
@@ -616,6 +617,7 @@
         const videoElement = document.getElementById('mainVideo');
         document.getElementById('cinemaPlayer').style.display = 'none';
         videoElement.pause();
+        videoElement.src = ""; // Clear source to stop buffering
     }
 
     /* --- 3. TAB & LIBRARY LOGIC --- */
@@ -637,7 +639,7 @@
             card.innerHTML = `
                 <div class="card-inner">
                     <div class="card-front">
-                        <img src="${item.image}" onerror="this.src='https://via.placeholder.com/300x400/222/ffd700?text=${item.name}'">
+                        <img src="${item.image}" onerror="this.src='https://via.placeholder.com/300x400/222/ffd700?text=${item.name}'" alt="${item.name}">
                         <div style="position:absolute; bottom:0; background:rgba(0,0,0,0.8); width:100%; padding:10px;">
                             <h4>${item.name}</h4>
                         </div>
@@ -664,7 +666,7 @@
     }
 
     function safetyProtocol() {
-        console.log("D-Cinema: Local Mode Engaged.");
+        console.log("D-Cinema Gold: System Online.");
     }
 </script>
     
