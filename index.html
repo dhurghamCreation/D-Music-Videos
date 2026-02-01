@@ -570,24 +570,27 @@ const mediaDatabase = [
 
 /* --- 2. THEATRE MODE ENGINE (Raw Link Fix) --- */
 	function launchCinemaMode(url, title) {
-	    console.log("System Loading Path:", url);
 	    const videoElement = document.getElementById('mainVideo');
 	    const playerContainer = document.getElementById('cinemaPlayer');
 	    
-	    // This Raw link tells GitHub to send the 2.2MB file directly, not the LFS pointer
+	    // Force the raw URL to bypass LFS pointer issues
 	    const rawUrl = "https://raw.githubusercontent.com/dhurghamCreation/D-Music-Videos/main/" + encodeURI(url);
 	    
 	    videoElement.pause();
 	    videoElement.src = rawUrl; 
+	    
+	    // 1. Mute the video first (Browsers ALWAYS allow muted video to auto-play)
+	    videoElement.muted = true; 
 	    videoElement.load(); 
 	
 	    document.getElementById('playerTrackTitle').innerText = title;
 	    playerContainer.style.display = 'flex';
 	    
-	    videoElement.play().catch(e => {
-	        console.error("Playback failed:", e);
-	        // Note: Browsers require you to click once on the page to allow audio
-	        console.log("Browser blocked autoplay. User must click to hear sound.");
+	    videoElement.play().then(() => {
+	        // 2. If it plays successfully while muted, show a tip to the user
+	        console.log("Playing muted. User must click to hear sound.");
+	    }).catch(e => {
+	        console.error("Playback failed entirely:", e);
 	    });
 	}
     function exitCinemaMode() {
