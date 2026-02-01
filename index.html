@@ -429,11 +429,6 @@
             <p id="login-error" style="color:red; margin-top:10px; display:none;">Access Denied. Try again.</p>
         </div>
     </div>
-	
-
-    
-
-   
 
     <nav id="navbar">
         <div class="nav-logo" onclick="switchTab('home')">D-CINEMA GOLD</div>
@@ -538,31 +533,13 @@
     <div id="series" class="section-container">
         <h2 class="section-title">TV Series</h2>
 		 <div class="film-container">
-	        <div class="film-card card-cars" onclick="playFilm('music/Cars.mp4')">
-	            <div class="card-overlay">
-	                <h2>CARS</h2>
-	                <button class="tab-btn">Watch Now</button>
-	            </div>
-	        </div>
+	        
 	
-	        <div class="film-card card-horton" onclick="playFilm('music/Horton.mp4')">
-	            <div class="card-overlay">
-	                <h2>HORTON</h2>
-	                <button class="tab-btn">Watch Now</button>
-	            </div>
-	        </div>
+	        
 	
-	        <div class="film-card card-panda" onclick="playFilm('music/KungFuPanda3.mp4')">
-	            <div class="card-overlay">
-	                <h2>KUNG FU PANDA 3</h2>
-	                <button class="tab-btn">Watch Now</button>
-	            </div>
-	        </div>
+	        
 	    </div>
-        <div style="text-align: center; padding: 100px;">
-            <h1>Coming Soon</h1>
-            <p>The server is currently indexing 'Game of Thrones' and 'Breaking Bad'...</p>
-        </div>
+        
     </div>
 
     <div id="cinemaPlayer">
@@ -615,18 +592,23 @@
 
     /* --- 2. THEATRE MODE ENGINE --- */
     function launchCinemaMode(url, title) {
-        const videoElement = document.getElementById('mainVideo');
-        const playerContainer = document.getElementById('cinemaPlayer');
-        
-        document.getElementById('playerTrackTitle').innerText = title;
-        videoElement.src = url;
-        playerContainer.style.display = 'flex';
-        
-        videoElement.load();
-        videoElement.play().catch(e => {
-            console.error("Playback failed. Check if the file exists at: " + url);
-        });
-    }
+	    const videoElement = document.getElementById('mainVideo');
+	    const playerContainer = document.getElementById('cinemaPlayer');
+	    
+	    // Clear previous source to prevent 416 errors on re-load
+	    videoElement.pause();
+	    videoElement.removeAttribute('src'); 
+	    videoElement.load();
+	
+	    document.getElementById('playerTrackTitle').innerText = title;
+	    videoElement.src = url;
+	    playerContainer.style.display = 'flex';
+	    
+	    videoElement.play().catch(e => {
+	        alert("Error: Video file '" + url + "' not found in your music folder!");
+	        console.error("Playback failed:", e);
+	    });
+	}
 
     function exitCinemaMode() {
         const videoElement = document.getElementById('mainVideo');
