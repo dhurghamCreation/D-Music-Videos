@@ -38,7 +38,7 @@
         }
 
         /* Backgrounds for specific films */
-        .card-cars { background: url('images/Cars.png') center/cover; }
+        .card-cars { background: url('images/Cars 2.png') center/cover; }
         .card-horton { background: url('images/Horton.png') center/cover; }
         .card-panda { background: url('images/Kung Fu Panda 3.png') center/cover; }
 
@@ -409,10 +409,7 @@
             <p id="login-error" style="color:red; margin-top:10px; display:none;">Access Denied. Try again.</p>
         </div>
     </div>
-	<div class="header-premium">
-        <h1>D-CINEMA GOLD</h1>
-        <p>Featured Films & Music</p>
-    </div>
+	
 
     <div class="tab-section">
         <button class="tab-btn">Home</button>
@@ -462,7 +459,7 @@
             
             <div class="hero-content">
                 <h1 class="hero-title">Experience the Future.</h1>
-                <p class="hero-desc">The Dhrg Signature Edition brings you high-fidelity streaming directly from your local Ubuntu Server.</p>
+                <p class="hero-desc">Watch movies and enjoy your time!</p>
                 <button class="action-btn" onclick="switchTab('movies')">Start Watching</button>
             </div>
         </div>
@@ -622,10 +619,14 @@
 
     /* --- 3. TAB & LIBRARY LOGIC --- */
     function switchTab(tabId) {
-        document.querySelectorAll('.section-container').forEach(el => el.classList.remove('active'));
-        const target = document.getElementById(tabId);
-        if(target) target.classList.add('active');
-    }
+	    document.querySelectorAll('.section-container').forEach(el => {
+	        el.style.display = 'none'; // Hide everything
+	    });
+	    document.getElementById(tabId).style.display = 'block'; // Show only target
+	}
+	function playFilm(url) {
+	    launchCinemaMode(url, "Now Playing");
+	}
 
     function renderLibrary() {
         const grid = document.getElementById('movies-grid');
