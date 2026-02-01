@@ -578,17 +578,19 @@
 
     /* --- 1. LOGIN SYSTEM --- */
     function attemptLogin() {
+        // We use 'login-overlay' to match your HTML ID
         const user = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
-        const loginOverlay = document.getElementById('login-overlay'); // Fixed ID name
+        const loginOverlay = document.getElementById('login-overlay');
 
         if (user === "gd" && pass === "123") {
             console.log("ACCESS GRANTED: WELCOME TO D-CINEMA GOLD");
+            loginOverlay.style.transition = "opacity 0.8s ease";
             loginOverlay.style.opacity = '0';
             setTimeout(() => {
                 loginOverlay.style.display = 'none';
-                initSlideshow(); // Start images after login
-                renderLibrary(); // Load movies after login
+                initSlideshow();
+                renderLibrary();
                 safetyProtocol();
             }, 800);
         } else {
@@ -598,29 +600,30 @@
     }
 
     /* --- 2. THEATRE MODE ENGINE --- */
-    const videoElement = document.getElementById('mainVideo');
-
     function launchCinemaMode(url, title) {
+        const videoElement = document.getElementById('mainVideo');
         document.getElementById('playerTrackTitle').innerText = title;
         
-        // Anti-Cache Timestamp
         const timestamp = new Date().getTime();
         const safeUrl = url.includes('?') ? `${url}&t=${timestamp}` : `${url}?t=${timestamp}`;
 
-        console.log("Attempting to load: " + safeUrl);
+        console.log("Loading Signature Stream: " + safeUrl);
         videoElement.src = safeUrl;
         document.getElementById('cinemaPlayer').style.display = 'flex';
         
         videoElement.load();
         videoElement.play().catch(e => {
-            console.warn("Playback Error: Check if tunnel is active.");
+            console.warn("Playback Error: Cloudflare Tunnel might be down.");
             const dbg = document.getElementById('debug-log');
-            dbg.innerText = "CRITICAL ERROR: Tunnel Offline or File Missing.";
-            dbg.style.display = "block";
+            if(dbg) {
+                dbg.innerText = "TUNNEL ERROR: Check Ubuntu Terminal.";
+                dbg.style.display = "block";
+            }
         });
     }
 
     function exitCinemaMode() {
+        const videoElement = document.getElementById('mainVideo');
         document.getElementById('cinemaPlayer').style.display = 'none';
         videoElement.pause();
         videoElement.src = "";
@@ -628,25 +631,19 @@
 
     /* --- 3. NAVIGATION SYSTEM --- */
     function switchTab(tabId) {
-        // Hide all sections
         document.querySelectorAll('.section-container').forEach(el => el.classList.remove('active'));
-        // Deactivate all nav links
         document.querySelectorAll('.nav-links li').forEach(el => el.classList.remove('active'));
         
-        // Show current tab
-        document.getElementById(tabId).classList.add('active');
+        const target = document.getElementById(tabId);
+        if(target) target.classList.add('active');
         
-        // Handle nav styling
-        const links = document.querySelectorAll('.nav-links li');
-        const tabMap = { 'home': 0, 'movies': 1, 'series': 2, 'shop': 3 };
-        if (tabMap[tabId] !== undefined) links[tabMap[tabId]].classList.add('active');
-
-        window.scrollTo(0,0);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     /* --- 4. LIBRARY RENDERER --- */
     function renderLibrary() {
         const grid = document.getElementById('movies-grid');
+        if(!grid) return;
         grid.innerHTML = ''; 
 
         mediaDatabase.forEach(item => {
@@ -661,7 +658,7 @@
                             <h4>${item.name}</h4>
                         </div>
                     </div>
-                    <div class="card-back">
+                    <div class="card-back" style="background: linear-gradient(45deg, #000, #E50914);">
                         <h2>PLAY</h2>
                         <p>${item.desc}</p>
                         <div style="font-size:3rem;">▶</div>
@@ -686,9 +683,10 @@
     function safetyProtocol() {
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('navbar');
-            if (window.scrollY > 50) nav.classList.add('scrolled');
-            else nav.classList.remove('scrolled');
+            if (nav && window.scrollY > 50) nav.classList.add('scrolled');
+            else if (nav) nav.classList.remove('scrolled');
         });
+        console.log("D-Cinema Signature Engine: Active");
     }
 </script>
     
