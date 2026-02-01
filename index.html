@@ -564,9 +564,9 @@
         { name: "Shelter", video: mediaRoot + "Shelter_small.mp4", image: imgRoot + "Shelter.png", desc: "Porter Robinson" },
         { name: "Mexican Song", video: mediaRoot + "Mexican_song_small.mp4", image: imgRoot + "Compass.png", desc: "Local Favorite" },
         { name: "Digitalism", video: mediaRoot + "Digitalism_small.mp4", image: imgRoot + "Digitalism.png", desc: "Electronic Beats" },
-        { name: "Cars", video: mediaRoot + "Cars_small.mp4", image: imgRoot + "Cars 2.png", desc: "Disney Pixar Classic" }, // Updated image name
-        { name: "Horton", video: mediaRoot + "Horton_small.mp4", image: imgRoot + "Horton.png", desc: "Signature Film" },
-        { name: "Kung Fu Panda 3", video: mediaRoot + "KungFuPanda3_small.mp4", image: imgRoot + "Kung Fu Panda 3.png", desc: "Dreamworks Elite" }
+        { name: "Cars", video: mediaRoot + "Cars.mp4", image: imgRoot + "Cars 2.png", desc: "Disney Pixar Classic" }, // Updated image name
+        { name: "Horton", video: mediaRoot + "Horton.mp4", image: imgRoot + "Horton.png", desc: "Signature Film" },
+        { name: "Kung Fu Panda 3", video: mediaRoot + "KungFuPanda3.mp4", image: imgRoot + "Kung Fu Panda 3.png", desc: "Dreamworks Elite" }
     ];
 
     /* --- 1. LOGIN SYSTEM --- */
@@ -605,8 +605,8 @@
 	    playerContainer.style.display = 'flex';
 	    
 	    videoElement.play().catch(e => {
-	        alert("Error: Video file '" + url + "' not found in your music folder!");
-	        console.error("Playback failed:", e);
+	        console.error("Playback failed. Path tried: " + url);
+        	alert("Error: The file '" + url + "' could not be found or is 0KB.");
 	    });
 	}
 
@@ -670,12 +670,17 @@
 	            </div>`;
 	        
 	        // 3. Logic: Put EVERYTHING in Movies, but only specific items in Series
-	        if (moviesGrid) moviesGrid.appendChild(card.cloneNode(true)); 
+	       if (moviesGrid) {
+	            moviesGrid.appendChild(card.cloneNode(true)); 
+	       }
 	        
 	        // If the item name is one of your films, add it to the Series tab too
-	        if (seriesGrid && ["Cars", "Horton", "Kung Fu Panda 3"].includes(item.name)) {
-	            seriesGrid.appendChild(card);
-	        }
+	       if (seriesGrid && ["Cars", "Horton", "Kung Fu Panda 3"].includes(item.name)) {
+            // Re-bind the click event because cloneNode doesn't copy listeners
+	            const seriesCard = card.cloneNode(true);
+	            seriesCard.onclick = () => launchCinemaMode(item.video, item.name);
+	            seriesGrid.appendChild(seriesCard);
+	       }
 	    });
 	}
     
