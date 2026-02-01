@@ -548,6 +548,10 @@
     </div>
 
     <div id="cinemaPlayer">
+		<video id="mainVideo" controls autoplay muted playsinline></video>
+		<p style="color: gold; text-align: center; margin-top: 10px;">
+		    ⚠️ Click the speaker icon on the video player to enable sound!
+		</p>
         <h3 id="playerTrackTitle">Now Playing</h3>
         <video id="mainVideo" controls controlsList="nodownload"></video>
         <div class="player-controls">
@@ -559,40 +563,41 @@
 <script>
     /* --- 1. CONFIGURATION --- */
     /* --- 1. CONFIGURATION (Case-Sensitive matched to your 'ls' output) --- */
+/* --- 1. CONFIGURATION (Matched exactly to your 'ls' output) --- */
 const mediaDatabase = [
     { name: "Run (FIFA 17)", video: "music/run_small.mp4", image: "images/run.png", desc: "High Energy" },
     { name: "Raging", video: "music/Raging_small.mp4", image: "images/raging.png", desc: "Kygo" },
     { name: "Digitalism", video: "music/Digitalism_small.mp4", image: "images/Digitalism.png", desc: "Electronic Beats" },
     { name: "Shelter", video: "music/Shelter_small.mp4", image: "images/shelter.png", desc: "Porter Robinson" },
     { name: "Mexican Song", video: "music/Mexican_song_small.mp4", image: "images/Compass.png", desc: "Local Favorite" },
-    { name: "Vera i Nadezehda", video: "music/Vera_i_Nadezehda_small.mp4", image: "images/stadium_pg.png", desc: "Special Track" }
+    { name: "Vera i Nadezehda", video: "music/Vera_i_Nadezehda_small.mp4", image: "images/stadium_bg.png", desc: "Special Track" }
 ];
 
-/* --- 2. THEATRE MODE ENGINE (Raw Link Fix) --- */
-	function launchCinemaMode(url, title) {
-	    const videoElement = document.getElementById('mainVideo');
-	    const playerContainer = document.getElementById('cinemaPlayer');
-	    
-	    // Force the raw URL to bypass LFS pointer issues
-	    const rawUrl = "https://raw.githubusercontent.com/dhurghamCreation/D-Music-Videos/main/" + encodeURI(url);
-	    
-	    videoElement.pause();
-	    videoElement.src = rawUrl; 
-	    
-	    // 1. Mute the video first (Browsers ALWAYS allow muted video to auto-play)
-	    videoElement.muted = true; 
-	    videoElement.load(); 
-	
-	    document.getElementById('playerTrackTitle').innerText = title;
-	    playerContainer.style.display = 'flex';
-	    
-	    videoElement.play().then(() => {
-	        // 2. If it plays successfully while muted, show a tip to the user
-	        console.log("Playing muted. User must click to hear sound.");
-	    }).catch(e => {
-	        console.error("Playback failed entirely:", e);
-	    });
-	}
+/* --- 2. THEATRE MODE ENGINE (The Permanent Fix) --- */
+function launchCinemaMode(url, title) {
+    const videoElement = document.getElementById('mainVideo');
+    const playerContainer = document.getElementById('cinemaPlayer');
+    
+    // PERMANENT FIX: Use the 'media' subdomain. 
+    // This is the ONLY way GitHub delivers real LFS video data to a browser.
+    const rawUrl = "https://media.githubusercontent.com/media/dhurghamCreation/D-Music-Videos/main/" + url;
+    
+    console.log("Fetching real video data from:", rawUrl);
+
+    videoElement.pause();
+    videoElement.muted = true; // Required by browsers to allow autoplay
+    videoElement.src = rawUrl; 
+    videoElement.load(); 
+
+    document.getElementById('playerTrackTitle').innerText = title;
+    playerContainer.style.display = 'flex';
+    
+    videoElement.play().then(() => {
+        console.log("Success! Video is playing. User must unmute for sound.");
+    }).catch(e => {
+        console.error("Browser security blocked sound. Click the video to hear music.");
+    });
+}
     function exitCinemaMode() {
         const videoElement = document.getElementById('mainVideo');
         document.getElementById('cinemaPlayer').style.display = 'none';
