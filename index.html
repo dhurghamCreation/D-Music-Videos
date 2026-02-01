@@ -682,11 +682,7 @@
 	        }
 	        
 	        // 3. Add to TV Series Tab with a FRESH click event
-	        if (seriesGrid && ["Cars", "Horton", "Kung Fu Panda 3"].includes(item.name)) {
-	            const seriesCard = card.cloneNode(true);
-	            seriesCard.onclick = () => launchCinemaMode(item.video, item.name);
-	            seriesGrid.appendChild(seriesCard);
-	        }
+	        
 	    });
 	}
     function initSlideshow() {
