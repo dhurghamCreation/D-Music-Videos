@@ -374,6 +374,21 @@
             background: linear-gradient(transparent, #000);
             text-align: center;
         }
+		.media-card {
+		    background: rgba(255, 255, 255, 0.05);
+		    backdrop-filter: blur(15px);
+		    border: 1px solid rgba(212, 175, 55, 0.3);
+		    border-radius: 20px;
+		    padding: 15px;
+		    transition: all 0.5s ease;
+		}
+	
+		.media-card:hover {
+		    background: rgba(212, 175, 55, 0.1);
+		    border-color: #D4AF37;
+		    transform: scale(1.05) translateY(-10px);
+		    box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+		}
 
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
@@ -557,28 +572,61 @@
             { name: "Mexican Song", video:myLiveTunnel + "music/Mexican_song.mp4", image: "images/Compass.png", desc: "Local Favorite" },
             { name: "Digitalism", video:myLiveTunnel + "music/Digitalism.mp4", image: "images/Digitalism.png", desc: "Electronic Beats" },
             { name: "Mexican Song", video: myLiveTunnel + "music/Mexican_song.mp4", image: "images/Compass.png", desc: "Local Favorit" }
+			{ name: "Cars (Signature)", video: myLiveTunnel + "music/Cars.mp4", image: "images/cars.png", type: "film", desc: "Disney Pixar Classic" },
+		    { name: "Horton", video: myLiveTunnel + "music/Horton.mp4", image: "images/horton.png", type: "film", desc: "Dr. Seuss Adventure" },
+		    { name: "Kung Fu Panda 3", video: myLiveTunnel + "music/KungFuPanda3.mp4", image: "images/panda.png", type: "film", desc: "Dreamworks Elite" }
         ];
 		function playFilm(path) {
             // Your 569-line logic for the Gold Player goes here
-            console.log("Playing: " + path);
-            alert("Loading Cinema Experience: " + path);
-        }
+            const videoPlayer = document.getElementById('mainPlayer');
+		    const playerContainer = document.getElementById('playerOverlay');
+		    
+		    console.log("INITIALIZING SIGNATURE STREAM...");
+		    console.log("SOURCE: " + path);
+		
+		    // Error Handling for Cloudflare Tunnels
+		    videoPlayer.onerror = function() {
+		        console.error("STREAM ERROR: The Cloudflare Tunnel may be offline.");
+		        alert("CRITICAL ERROR: Connection to Media Server Lost. Check if Ubuntu Terminal is running.");
+        	}
+				videoPlayer.src = path;
+			    playerContainer.style.display = 'flex';
+			    
+			    // Smooth Fade-in and Auto-Play
+			    videoPlayer.load();
+			    videoPlayer.play().catch(e => {
+			        console.log("Autoplay blocked. User interaction required.");
+			    });
+		}
 
         /* --- 1. LOGIN SYSTEM --- */
         function attemptLogin() {
-            const user = document.getElementById('username').value;
-            
-            if (user.length > 0) {
-                document.getElementById('login-overlay').style.display = 'none';
-                initSlideshow();
-                renderLibrary();
-                safetyProtocol();
-            } else {
-                document.getElementById('login-error').style.display = 'block';
-            }
-        }
+		    const user = document.getElementById('username').value;
+		    const pass = document.getElementById('password').value;
+		    const loginScreen = document.getElementById('login-screen');
+		
+		    if (user === "gd" && pass === "123") {
+		        console.log("ACCESS GRANTED: WELCOME TO D-CINEMA GOLD");
+		        loginScreen.style.opacity = '0';
+		        setTimeout(() => {
+		            loginScreen.style.display = 'none';
+		        }, 800);
+		    } else {
+		        alert("SIGNATURE REJECTED: INVALID CREDENTIALS");
+		        document.getElementById('password').value = "";
+		    }
+		}
 
-        
+         function switchView(type) {
+		    const cards = document.querySelectorAll('.media-card');
+		    cards.forEach(card => {
+		        if (type === 'all' || card.getAttribute('data-type') === type) {
+		            card.style.display = 'block';
+		        } else {
+		            card.style.display = 'none';
+		        }
+		    });
+		} 
         function switchTab(tabId) {
            
             document.querySelectorAll('.section-container').forEach(el => el.classList.remove('active'));
