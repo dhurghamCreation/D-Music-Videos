@@ -548,16 +548,12 @@
     </div>
 
     <div id="cinemaPlayer">
-		<video id="mainVideo" controls autoplay muted playsinline></video>
-		<p style="color: gold; text-align: center; margin-top: 10px;">
-		    ⚠️ Click the speaker icon on the video player to enable sound!
-		</p>
-        <h3 id="playerTrackTitle">Now Playing</h3>
-        <video id="mainVideo" controls controlsList="nodownload"></video>
-        <div class="player-controls">
-            <button class="close-btn" onclick="exitCinemaMode()">EXIT THEATRE MODE</button>
-        </div>
-    </div>
+	    <h3 id="playerTrackTitle">Now Playing</h3>
+	    <video id="mainVideo" controls autoplay playsinline></video> 
+	    <div class="player-controls">
+	        <button class="close-btn" onclick="exitCinemaMode()">EXIT THEATRE MODE</button>
+	    </div>
+	</div>
 
     <div id="debug-log"></div>
 <script>
@@ -581,28 +577,7 @@ const mediaDatabase = [
         videoElement.pause();
         videoElement.src = ""; 
     }
-	function launchCinemaMode(url, title) {
-	    const videoElement = document.getElementById('mainVideo');
-	    const playerContainer = document.getElementById('cinemaPlayer');
-	    
-	    // PERMANENT FIX: Use the 'media' subdomain to get the actual 2.2MB file
-	    const repoPath = "dhurghamCreation/D-Music-Videos/main/";
-	    const rawUrl = "https://media.githubusercontent.com/media/" + repoPath + url;
-	    
-	    videoElement.pause();
-	    videoElement.muted = true; // Auto-play only works if muted
-	    videoElement.src = rawUrl; 
-	    videoElement.load(); 
 	
-	    document.getElementById('playerTrackTitle').innerText = title;
-	    playerContainer.style.display = 'flex';
-	    
-	    videoElement.play().then(() => {
-	        console.log("Video playing muted. Click speaker icon for sound.");
-	    }).catch(e => {
-	        console.error("Manual interaction required:", e);
-	    });
-	}
     /* --- 3. LOGIN & SYSTEM INITIALIZATION --- */
     function attemptLogin() {
         const user = document.getElementById('username').value;
@@ -621,6 +596,32 @@ const mediaDatabase = [
             alert("ACCESS DENIED");
         }
     }
+	function launchCinemaMode(url, title) {
+	    const videoElement = document.getElementById('mainVideo');
+	    const playerContainer = document.getElementById('cinemaPlayer');
+	    
+	    // Correct Media Gateway for Git LFS
+	    const rawUrl = "https://media.githubusercontent.com/media/dhurghamCreation/D-Music-Videos/main/" + url;
+	    
+	    videoElement.pause();
+	    videoElement.src = rawUrl;
+	    
+	    // Attempting unmuted playback since this is triggered by a click
+	    videoElement.muted = false; 
+	    videoElement.volume = 1.0; 
+	    
+	    videoElement.load(); 
+	
+	    document.getElementById('playerTrackTitle').innerText = title;
+	    playerContainer.style.display = 'flex';
+	    
+	    // Play with a catch for browser security
+	    videoElement.play().catch(e => {
+	        console.log("Browser still blocking sound. Falling back to muted autoplay.");
+	        videoElement.muted = true;
+	        videoElement.play();
+	    });
+	}
 
     /* --- 4. UI RENDERING --- */
     function switchTab(tabId) {
