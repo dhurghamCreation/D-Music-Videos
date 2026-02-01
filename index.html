@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<link rel="preload" as="image" href="images/st.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D-Cinema | Ultimate Signature Edition</title>
@@ -222,8 +223,9 @@
             background-size: cover;
             background-position: center;
             opacity: 0;
-            transition: opacity 0.5s ease-in-out;
+            transition: opacity 0.6s ease-in-out;
 			filter: brightness(0.5) contrast(1.1);
+			
         }
 
         .slide.active { opacity: 1; }
@@ -462,6 +464,7 @@
 
     <div id="home" class="section-container active">
         <div id="hero-slider">
+			<div class="slide active" style="background-image: url('images/st.png');"></div>
 		    <div class="slide active" style="background-image: url('images/Background beautiful image.png');"></div>
 		    <div class="slide" style="background-image: url('images/Raging.png');"></div>
 		    <div class="slide" style="background-image: url('images/Shelter.png');"></div>
@@ -688,16 +691,22 @@ const mediaDatabase = [
 	}
 
     function initSlideshow() {
-        const slides = document.querySelectorAll('.slide');
-        let currentSlide = 0;
-        if(slides.length > 0) {
-            setInterval(() => {
-                slides[currentSlide].classList.remove('active');
-                currentSlide = (currentSlide + 1) % slides.length;
-                slides[currentSlide].classList.add('active');
-            }, 3000);
-        }
-    }
+	    const slides = document.querySelectorAll('.slide');
+	    let currentSlide = 0;
+	    
+	    if(slides.length > 0) {
+	        setInterval(() => {
+	            // Hide current slide
+	            slides[currentSlide].classList.remove('active');
+	            
+	            // Move to next slide (it will wrap around automatically)
+	            currentSlide = (currentSlide + 1) % slides.length;
+	            
+	            // Show next slide
+	            slides[currentSlide].classList.add('active');
+	        }, 4000); // 4 seconds is the "sweet spot" for professional sites
+	    }
+	}
 </script>
 </body>
 </html>
