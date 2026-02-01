@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D-Cinema | Ultimate Signature Edition</title>
+    <style>
+        /* --- 1. CORE VARIABLES & RESET --- */
+        :root {
+            --primary-gold: #FFD700;
+            --primary-red: #E50914;
+            --deep-black: #0a0a0a;
+            --glass-panel: rgba(20, 20, 20, 0.85);
+            --neon-glow: 0 0 10px rgba(229, 9, 20, 0.7);
+            --text-main: #ffffff;
+            --text-dim: #b3b3b3;
+            --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            --transition-speed: 0.4s;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--deep-black);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* --- 2. LOGIN OVERLAY SYSTEM (The Gate) --- */
+        #login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-image: radial-gradient(circle at center, #222 0%, #000 100%);
+        }
+
+        .login-box {
+            width: 400px;
+            padding: 40px;
+            background: rgba(30, 30, 30, 0.9);
+            border: 1px solid #333;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            animation: fadeIn 1.5s ease;
+        }
+
+        .login-logo {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-red);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: var(--neon-glow);
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: #333;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            font-size: 1.1rem;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition-speed);
+        }
+
+        .login-btn:hover { background: #ff1f1f; transform: scale(1.02); }
+
+        /* --- 3. MAIN NAVIGATION (Glassmorphism) --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            z-index: 1000;
+            transition: background 0.3s;
+        }
+
+        nav.scrolled { background: var(--deep-black); }
+
+        .nav-logo {
+            font-size: 2rem;
+            color: var(--primary-red);
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(229,9,20,0.5);
+            cursor: pointer;
+        }
+
+        .nav-links { list-style: none; display: flex; gap: 30px; }
+        .nav-links li { cursor: pointer; color: var(--text-dim); transition: 0.3s; font-size: 1rem; }
+        .nav-links li:hover, .nav-links li.active { color: white; font-weight: bold; }
+
+        /* --- 4. HERO SECTION (Sliding Images) --- */
+        #hero-slider {
+            height: 80vh;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .slide.active { opacity: 1; }
+
+        .hero-content {
+            position: absolute;
+            bottom: 20%;
+            left: 50px;
+            max-width: 600px;
+            z-index: 10;
+        }
+
+        .hero-title { font-size: 4rem; margin-bottom: 20px; text-shadow: 2px 2px 10px black; }
+        .hero-desc { font-size: 1.2rem; margin-bottom: 30px; text-shadow: 1px 1px 5px black; }
+        
+        .action-btn {
+            padding: 15px 40px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid white;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .action-btn:hover { background: white; color: black; }
+
+        /* --- 5. CONTENT SECTIONS (Grid System) --- */
+        .section-container {
+            padding: 50px;
+            display: none; /* Hidden by default, JS toggles this */
+            animation: slideUp 0.6s ease;
+            min-height: 100vh;
+        }
+
+        .section-container.active { display: block; }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary-red);
+            padding-left: 20px;
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* --- 6. ADVANCED FLIP CARDS (For Shop & Movies) --- */
+        .card {
+            background-color: transparent;
+            width: 100%;
+            height: 400px;
+            perspective: 1000px; /* Essential for 3D flip */
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .card:hover .card-inner { transform: rotateY(180deg); }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .card-front {
+            background-color: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0; left: 0;
+            transition: 0.5s;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, var(--primary-red), #550000);
+            color: white;
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Special Animation for "Shop" Items */
+        .shop-letter {
+            font-size: 8rem;
+            font-weight: 900;
+            background: -webkit-linear-gradient(var(--primary-gold), #ff8800);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* --- 7. CINEMA PLAYER OVERLAY --- */
+        #cinemaPlayer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: black;
+            z-index: 5000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        video { width: 90%; max-width: 1200px; outline: none; border: 2px solid #333; box-shadow: 0 0 50px rgba(255,255,255,0.1); }
+
+        .player-controls { margin-top: 20px; display: flex; gap: 20px; }
+        .close-btn { background: var(--primary-red); border: none; padding: 10px 30px; color: white; cursor: pointer; font-size: 1.2rem; border-radius: 4px; }
+        
+        #playerTrackTitle {
+            position: absolute;
+            top: 20px; left: 30px;
+            color: white;
+            font-size: 1.5rem;
+            opacity: 0.5;
+        }
+
+        /* --- 8. DEBUG CONSOLE (Legacy Support) --- */
+        #debug-log {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+            z-index: 10000;
+            font-family: monospace;
+            max-width: 300px;
+        }
+
+        /* --- ANIMATION KEYFRAMES --- */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="login-box">
+            <div class="login-logo">D-CINEMA</div>
+            <p style="color:#888; margin-bottom: 20px;">Secure Access Required</p>
+            <input type="text" class="login-input" placeholder="Username (Admin)" id="username">
+            <input type="password" class="login-input" placeholder="Password" id="password">
+            <button class="login-btn" onclick="attemptLogin()">ENTER SYSTEM</button>
+            <p id="login-error" style="color:red; margin-top:10px; display:none;">Access Denied. Try again.</p>
+        </div>
+    </div>
+
+    <nav id="navbar">
+        <div class="nav-logo" onclick="switchTab('home')">D-CINEMA GOLD</div>
+        <ul class="nav-links">
+            <li class="active" onclick="switchTab('home')">Home</li>
+            <li onclick="switchTab('movies')">Movies & Music</li>
+            <li onclick="switchTab('series')">TV Series</li>
+            <li onclick="switchTab('shop')">Merch Store</li>
+        </ul>
+        <div style="color: white; font-size: 0.9rem;">Server: <span style="color:#0f0">ONLINE (Cloudflare)</span></div>
+    </nav>
+
+    <div id="home" class="section-container active">
+        <div id="hero-slider">
+            <div class="slide active" style="background-image: url('images/stadium_bg.png'); filter: brightness(0.6);"></div>
+            <div class="slide" style="background-image: url('images/Raging.png'); filter: brightness(0.6);"></div>
+            <div class="slide" style="background-image: url('images/Shelter.png'); filter: brightness(0.6);"></div>
+            
+            <div class="hero-content">
+                <h1 class="hero-title">Experience the Future.</h1>
+                <p class="hero-desc">The Dhrg Signature Edition brings you high-fidelity streaming directly from your local Ubuntu Server.</p>
+                <button class="action-btn" onclick="switchTab('movies')">Start Watching</button>
+            </div>
+        </div>
+        
+        <div style="padding: 0 50px;">
+            <h2 class="section-title">Trending Now</h2>
+            <div class="media-grid" id="trending-grid">
+                </div>
+        </div>
+    </div>
+
+    <div id="movies" class="section-container">
+        <h2 class="section-title">Your Media Library</h2>
+        <p style="color: #666; margin-bottom: 20px;">Path: ~/media-server/music/ | Status: Connected</p>
+        <div class="media-grid" id="movies-grid">
+            </div>
+    </div>
+
+    <div id="shop" class="section-container">
+        <h2 class="section-title">Official D-Cinema Merchandise</h2>
+        <p style="color: #bbb; margin-bottom: 30px;">Buy exclusive letters. 3D Configuration Enabled.</p>
+        <div class="media-grid" id="shop-grid">
+            <div class="card">
+                <div class="card-inner">
+                    <div class="card-front" style="background: #222; display:flex; align-items:center; justify-content:center;">
+                        <div class="shop-letter">D</div>
+                    </div>
+                    <div class="card-back">
+                        <h3>The Letter 'D'</h3>
+                        <p>Signature Edition</p>
+                        <h2 style="color: gold; margin: 10px 0;">$500</h2>
+                        <button class="action-btn" style="background:white; color:black;">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-inner">
+                    <div class="card-front" style="background: #222; display:flex; align-items:center; justify-content:center;">
+                        <div class="shop-letter">H</div>
+                    </div>
+                    <div class="card-back">
+                        <h3>The Letter 'H'</h3>
+                        <p>High Fidelity Model</p>
+                        <h2 style="color: gold; margin: 10px 0;">$750</h2>
+                        <button class="action-btn" style="background:white; color:black;">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-inner">
+                    <div class="card-front" style="background: #222; display:flex; align-items:center; justify-content:center;">
+                        <div class="shop-letter">R</div>
+                    </div>
+                    <div class="card-back">
+                        <h3>The Letter 'R'</h3>
+                        <p>Rare Collection</p>
+                        <h2 style="color: gold; margin: 10px 0;">$1,200</h2>
+                        <button class="action-btn" style="background:white; color:black;">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-inner">
+                    <div class="card-front" style="background: #222; display:flex; align-items:center; justify-content:center;">
+                        <div class="shop-letter">G</div>
+                    </div>
+                    <div class="card-back">
+                        <h3>The Letter 'G'</h3>
+                        <p>Gold Standard</p>
+                        <h2 style="color: gold; margin: 10px 0;">$9,000</h2>
+                        <button class="action-btn" style="background:white; color:black;">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="series" class="section-container">
+        <h2 class="section-title">TV Series</h2>
+        <div style="text-align: center; padding: 100px;">
+            <h1>Coming Soon</h1>
+            <p>The server is currently indexing 'Game of Thrones' and 'Breaking Bad'...</p>
+        </div>
+    </div>
+
+    <div id="cinemaPlayer">
+        <h3 id="playerTrackTitle">Now Playing</h3>
+        <video id="mainVideo" controls controlsList="nodownload"></video>
+        <div class="player-controls">
+            <button class="close-btn" onclick="exitCinemaMode()">EXIT THEATRE MODE</button>
+        </div>
+    </div>
+
+    <div id="debug-log"></div>
+
+    <script>
+	const myLiveTunnel = "https://finite-machinery-basic-earlier.trycloudflare.com/";
+        /* --- CONFIGURATION & DATABASE --- */
+        const mediaDatabase = [
+            { name: "Run (FIFA 17)", video: myLiveTunnel + "music/run.mp4", image: "images/Run.png", desc: "High Energy Track" },
+            { name: "Raging", video: myLiveTunnel + "music/Raging.mp4", image: "images/Raging.png", desc: "Kygo & Kodaline" },
+            { name: "ZHU - Faded", video: myLiveTunnel + "music/ZHU.mp4", image: "images/ZHU.png", desc: "Deep House Classic" },
+            { name: "Shelter", video: myLiveTunnel + "music/Shelter.mp4", image: "images/Shelter.png", desc: "Porter Robinson" },
+            { name: "Mexican Song", video:myLiveTunnel + "music/Mexican_song.mp4", image: "images/Compass.png", desc: "Local Favorite" },
+            { name: "Digitalism", video:myLiveTunnel + "music/Digitalism.mp4", image: "images/Digitalism.png", desc: "Electronic Beats" },
+            { name: "Mexican Song", video: myLiveTunnel + "music/Mexican_song.mp4", image: "images/Compass.png", desc: "Local Favorit" }
+        ];
+
+        /* --- 1. LOGIN SYSTEM --- */
+        function attemptLogin() {
+            const user = document.getElementById('username').value;
+            // Simple mock authentication - In a real app, this would check a database
+            if (user.length > 0) {
+                document.getElementById('login-overlay').style.display = 'none';
+                initSlideshow();
+                renderLibrary();
+                safetyProtocol();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        /* --- 2. NAVIGATION LOGIC --- */
+        function switchTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('.section-container').forEach(el => el.classList.remove('active'));
+            // Remove active class from nav links
+            document.querySelectorAll('.nav-links li').forEach(el => el.classList.remove('active'));
+            
+            // Show selected
+            document.getElementById(tabId).classList.add('active');
+            
+            // Highlight nav item (simple loop)
+            const links = document.querySelectorAll('.nav-links li');
+            if(tabId === 'home') links[0].classList.add('active');
+            if(tabId === 'movies') links[1].classList.add('active');
+            if(tabId === 'series') links[2].classList.add('active');
+            if(tabId === 'shop') links[3].classList.add('active');
+
+            // Scroll to top
+            window.scrollTo(0,0);
+        }
+
+        /* --- 3. SLIDESHOW ENGINE --- */
+        let currentSlide = 0;
+        function initSlideshow() {
+            const slides = document.querySelectorAll('.slide');
+            setInterval(() => {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 5000); // Change slide every 5 seconds
+        }
+
+        /* --- 4. RENDER MEDIA GRID (Dynamic Generation) --- */
+        function renderLibrary() {
+            const grid = document.getElementById('movies-grid');
+            grid.innerHTML = ''; // Clear existing
+
+            mediaDatabase.forEach(item => {
+                // Create the Card Structure dynamically
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => launchCinemaMode(item.video, item.name);
+
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="${item.image}" onerror="this.src='https://via.placeholder.com/300x400/000000/FFFFFF?text=${item.name}'" alt="${item.name}">
+                            <div style="position:absolute; bottom:0; background:rgba(0,0,0,0.8); width:100%; padding:10px;">
+                                <h4>${item.name}</h4>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <h2>PLAY</h2>
+                            <p>${item.desc}</p>
+                            <div style="font-size:3rem;">▶</div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /* --- 5. PLAYER ENGINE (With Cache Buster & Error Handling) --- */
+        const videoElement = document.getElementById('mainVideo');
+
+        function launchCinemaMode(url, title) {
+            document.getElementById('playerTrackTitle').innerText = title;
+            
+            // CACHE BUSTER: This fixes the Cloudflare/WSL sync issue
+            const timestamp = new Date().getTime();
+            const safeUrl = url.includes('?') ? `${url}&t=${timestamp}` : `${url}?t=${timestamp}`;
+
+            console.log("Attempting to load: " + safeUrl);
+            videoElement.src = safeUrl;
+            
+            document.getElementById('cinemaPlayer').style.display = 'flex';
+            
+            const startAttempt = videoElement.play();
+
+            if (startAttempt !== undefined) {
+                startAttempt.catch(e => {
+                    console.warn("Playback Error Alert: " + url);
+                    const dbg = document.getElementById('debug-log');
+                    dbg.innerText = "CRITICAL ERROR: Cannot find " + url + " on server. Check Console.";
+                    dbg.style.display = "block";
+                    setTimeout(() => dbg.style.display = "none", 6000);
+                });
+            }
+        }
+
+        function exitCinemaMode() {
+            document.getElementById('cinemaPlayer').style.display = 'none';
+            videoElement.pause();
+            videoElement.src = "";
+        }
+
+        /* --- 6. DEFENSIVE CODE BLOCKS (Legacy & Safety) --- */
+        function safetyProtocol() {
+            console.log("%c D-Cinema System Initialization Complete...", "color: gold; font-size: 14px;");
+            console.log("Current Theme: Dhrg Signature Edition (Ultimate)");
+            console.log("Target Directory: /wsl$/Ubuntu-22.04/home/dhuny/media-server/music/");
+            
+            // Check for scroll events to style nav
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('navbar');
+                if (window.scrollY > 50) nav.classList.add('scrolled');
+                else nav.classList.remove('scrolled');
+            });
+        }
+    </script>
+</body>
+</html>

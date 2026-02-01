@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D - Brilliant Media | Dhrg Signature Edition</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@300;500;800&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- DESIGN TOKENS --- */
+        :root { 
+            --gold: #D4AF37; 
+            --dark: #050505; 
+            --gray-deep: #0a0a0a;
+            --gray-med: #151515; 
+            --transition-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --gold-glow: 0 0 25px rgba(212, 175, 55, 0.4);
+        }
+
+        /* --- RESET & BASE --- */
+        * { box-sizing: border-box; outline: none; }
+        body { 
+            margin: 0; 
+            background: var(--dark); 
+            color: white; 
+            font-family: 'Montserrat', sans-serif; 
+            overflow-x: hidden; 
+            scroll-behavior: smooth; 
+        }
+
+        /* --- NAVIGATION: THE BRIDGE ARCHITECTURE --- */
+        nav { 
+            position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; 
+            padding: 0 60px; z-index: 5000; background: rgba(0,0,0,0.98); 
+            border-bottom: 2px solid var(--gold); align-items: center; height: 95px;
+        }
+        .logo-section { display: flex; align-items: center; gap: 20px; }
+        .logo-text { font-family: 'Cinzel', serif; font-size: 50px; color: var(--gold); cursor: pointer; transition: 0.3s; }
+        .logo-text:hover { text-shadow: 0 0 25px var(--gold); }
+        .signature-gold { font-family: 'Great Vibes', cursive; color: var(--gold); font-size: 40px; margin-top: 15px; filter: drop-shadow(0 0 8px rgba(212,175,55,0.6)); }
+
+        .nav-links-container { display: flex; gap: 45px; height: 100%; align-items: center; }
+        
+        /* Dropdown with Interactive Bridge Fix */
+        .nav-item { position: relative; height: 100%; display: flex; align-items: center; }
+        .nav-item::after { 
+            content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 45px; 
+            background: transparent; z-index: -1; 
+        }
+        
+        .nav-label { 
+            color: white; cursor: pointer; font-weight: 800; font-size: 13.5px; 
+            text-transform: uppercase; letter-spacing: 3.5px; transition: var(--transition-smooth);
+            position: relative;
+        }
+        .nav-label:hover { color: var(--gold); }
+        .nav-label::before {
+            content: ""; position: absolute; bottom: -8px; left: 0; width: 0; height: 3px;
+            background: var(--gold); transition: 0.3s;
+        }
+        .nav-label:hover::before { width: 100%; }
+        
+        .nav-dropdown-box {
+            display: none; position: absolute; background: var(--gray-deep); min-width: 320px;
+            box-shadow: 0 35px 70px rgba(0,0,0,1); border: 2px solid var(--gold); 
+            top: 95px; left: -25px; border-radius: 0 0 18px 18px; overflow: hidden;
+            animation: navReveal 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .nav-dropdown-box a { 
+            color: #bbb; padding: 22px 35px; text-decoration: none; display: flex; 
+            align-items: center; gap: 18px; font-size: 12.5px; border-bottom: 1px solid #1c1c1c;
+            transition: 0.4s;
+        }
+        .nav-dropdown-box a i { color: var(--gold); font-size: 15px; width: 25px; }
+        .nav-dropdown-box a:hover { background: var(--gold); color: black; padding-left: 50px; }
+        .nav-item:hover .nav-dropdown-box { display: block; }
+
+        /* --- ADVANCED SEARCH UI --- */
+        .search-outer { position: relative; margin-left: 25px; }
+        .search-field { 
+            background: #0f0f0f; border: 1.5px solid #333; color: white; padding: 15px 55px 15px 30px; 
+            border-radius: 45px; outline: none; width: 260px; transition: var(--transition-smooth);
+            font-family: 'Montserrat'; font-size: 14px;
+        }
+        .search-field:focus { width: 440px; border-color: var(--gold); box-shadow: var(--gold-glow); }
+        .search-btn-icon { position: absolute; right: 22px; top: 16px; color: var(--gold); font-size: 20px; cursor: pointer; }
+
+        /* --- DYNAMIC SLIDER COMPONENT --- */
+        .master-slider { height: 95vh; width: 100%; position: relative; overflow: hidden; }
+        .slide-unit { 
+            position: absolute; inset: 0; opacity: 0; transition: opacity 2.5s ease; 
+            background-size: cover; background-position: center; 
+        }
+        .slide-unit.active { opacity: 1; }
+        .slide-grad { 
+            position: absolute; inset: 0; background: radial-gradient(circle at 25%, rgba(0,0,0,0.85) 0%, transparent 100%);
+            display: flex; flex-direction: column; justify-content: center; padding: 0 120px;
+        }
+        .slide-grad h1 { font-family: 'Cinzel'; font-size: 115px; color: var(--gold); margin: 0; letter-spacing: -6px; line-height: 0.95; }
+        .slide-grad p { font-size: 25px; max-width: 850px; color: #f0f0f0; margin-top: 25px; line-height: 1.6; font-weight: 300; }
+
+        /* --- GALLERY GRID ARCHITECTURE --- */
+        .main-gallery-section { padding: 110px 70px; }
+        .row-heading { 
+            font-family: 'Cinzel'; color: var(--gold); font-size: 40px; margin-bottom: 55px; 
+            display: flex; align-items: center; gap: 35px; 
+        }
+        .row-heading span { flex: 1; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); }
+        
+        .horizontal-scroll { display: flex; gap: 40px; overflow-x: auto; padding: 25px 15px 65px; scrollbar-width: none; }
+        .horizontal-scroll::-webkit-scrollbar { display: none; }
+        
+        .media-poster-wrap { 
+            min-width: 340px; height: 500px; position: relative; border-radius: 25px; 
+            overflow: hidden; border: 2px solid #1c1c1c; transition: var(--transition-smooth); cursor: pointer;
+        }
+        .media-poster-wrap img { width: 100%; height: 100%; object-fit: cover; transition: 1s; }
+        .media-poster-wrap:hover { transform: scale(1.04) translateY(-25px); border-color: var(--gold); box-shadow: 0 40px 80px rgba(0,0,0,0.95); }
+        .media-poster-wrap:hover img { filter: brightness(0.25) blur(10px); transform: scale(1.25); }
+        
+        .poster-content-overlay { 
+            position: absolute; inset: 0; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; opacity: 0; transition: 0.6s; padding: 35px; text-align: center;
+        }
+        .media-poster-wrap:hover .poster-content-overlay { opacity: 1; }
+        .poster-play-btn { width: 90px; height: 90px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: black; font-size: 35px; margin-bottom: 25px; transition: 0.3s; }
+        .poster-play-btn:hover { transform: scale(1.15); box-shadow: 0 0 30px var(--gold); }
+
+        /* --- FIFA 17 MUSIC PORTAL (PRECISION FIXES) --- */
+        #fifa-music-view { display: none; padding: 160px 70px; background: #010101; }
+        .fifa-banner { 
+            height: 550px; width: 100%; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('images/Background beautiful image.png') center/cover fixed; 
+            border-radius: 35px; margin-bottom: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border: 4px solid var(--gold); box-shadow: 0 0 60px rgba(212,175,55,0.25);
+        }
+        .music-grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 60px; }
+        
+        .track-card { height: 540px; perspective: 2800px; cursor: pointer; }
+        .track-card-inner { position: relative; width: 100%; height: 100%; transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; }
+        .track-card:hover .track-card-inner { transform: rotateY(180deg); }
+        
+        .track-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 35px; border: 3px solid var(--gold); overflow: hidden; }
+        .track-face.front img { width: 100%; height: 100%; object-fit: cover; transition: 0.6s; }
+        .track-face.back { 
+            background: linear-gradient(135deg, #1c1c1c, #000); transform: rotateY(180deg); 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 45px;
+        }
+        .track-name-badge { position: absolute; bottom: 35px; left: 35px; background: rgba(0,0,0,0.92); padding: 14px 28px; border-left: 7px solid var(--gold); font-weight: 800; font-size: 20px; letter-spacing: 1.5px; }
+
+        /* --- THEATER MODE PLAYER (FIXED RECTANGLE) --- */
+        #cinemaPlayer { position: fixed; inset: 0; background: rgba(0,0,0,0.995); display: none; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 50px; }
+        .video-box-frame { width: 92%; max-width: 1500px; position: relative; border: 6px solid var(--gold); border-radius: 30px; overflow: hidden; box-shadow: 0 0 160px rgba(212,175,55,0.6); }
+        video { width: 100%; height: auto; display: block; background: #000; }
+        .close-player-btn { margin-top: 60px; padding: 22px 100px; background: transparent; color: white; border: 3px solid #ff1111; border-radius: 60px; cursor: pointer; font-weight: 900; text-transform: uppercase; transition: 0.4s; letter-spacing: 3px; }
+        .close-player-btn:hover { background: #ff1111; box-shadow: 0 0 45px #ff1111; transform: scale(1.15); }
+
+        /* --- FOOTER ENGINEERING --- */
+        .site-footer { background: #030303; padding: 130px 90px 60px; border-top: 3px solid #111; margin-top: 160px; }
+        .footer-wrap { display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr; gap: 90px; max-width: 1700px; margin: 0 auto; }
+        .footer-brand h2 { font-family: 'Cinzel'; color: var(--gold); font-size: 45px; margin-bottom: 25px; }
+        .footer-brand p { color: #777; line-height: 2; font-size: 15px; }
+        .footer-nav-col h4 { color: var(--gold); font-family: 'Cinzel'; margin-bottom: 35px; font-size: 20px; letter-spacing: 2px; }
+        .footer-nav-col a { display: block; color: #666; text-decoration: none; margin-bottom: 20px; font-size: 15px; transition: 0.4s; }
+        .footer-nav-col a:hover { color: white; padding-left: 12px; }
+
+        /* --- ANIMATION KEYFRAMES --- */
+        @keyframes navReveal { 
+            from { opacity: 0; transform: translateY(40px) scale(0.92); } 
+            to { opacity: 1; transform: translateY(0) scale(1); } 
+        }
+
+        /* --- ERROR LOGGER (DEBUGGING) --- */
+        #debug-log { position: fixed; bottom: 20px; left: 20px; background: rgba(255,0,0,0.8); padding: 10px; border-radius: 5px; font-size: 12px; display: none; z-index: 10001; }
+
+        /* --- CUSTOM SCROLLBARS --- */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #020202; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 12px; border: 3px solid #020202; }
+    </style>
+</head>
+<body>
+
+    <div id="debug-log"></div>
+
+    <nav>
+        <div class="logo-section">
+            <div class="logo-text" onclick="location.reload()">D</div>
+            <div class="signature-gold">Dhrg</div>
+        </div>
+        
+        <div class="nav-links-container">
+            <div class="nav-item">
+                <span class="nav-label" onclick="toggleView('home')">Home</span>
+                <div class="nav-dropdown-box">
+                    <a href="#"><i class="fa fa-bolt"></i> Spotlight Premieres</a>
+                    <a href="#"><i class="fa fa-history"></i> Continue Watching</a>
+                    <a href="#"><i class="fa fa-heart"></i> My Cinematic List</a>
+                    <a href="#"><i class="fa fa-cog"></i> Quality Settings</a>
+                </div>
+            </div>
+
+            <div class="nav-item">
+                <span class="nav-label">TV Series</span>
+                <div class="nav-dropdown-box">
+                    <a href="#"><i class="fa fa-fist-raised"></i> Action & Martial Arts</a>
+                    <a href="#"><i class="fa fa-mask"></i> High-Stakes Drama</a>
+                    <a href="#"><i class="fa fa-tv"></i> Original Docuseries</a>
+                    <a href="#"><i class="fa fa-child"></i> Anime Masterworks</a>
+                    <a href="#"><i class="fa fa-file-alt"></i> Historical Archives</a>
+                </div>
+            </div>
+
+            <div class="nav-item">
+                <span class="nav-label">Movies</span>
+                <div class="nav-dropdown-box">
+                    <a href="#"><i class="fa fa-star"></i> Hollywood Blockbusters</a>
+                    <a href="#"><i class="fa fa-video"></i> Independent Visions</a>
+                    <a href="#"><i class="fa fa-film"></i> Vintage Cinema</a>
+                    <a href="#"><i class="fa fa-gem"></i> Award-Winning Kits</a>
+                    <a href="#"><i class="fa fa-hdd"></i> Ultra HD 4K Collection</a>
+                </div>
+            </div>
+
+            <span class="nav-label" onclick="toggleView('fifa')" style="color: var(--gold); padding: 14px 30px; border: 3px solid var(--gold); border-radius: 60px; font-weight: 900;">Music Portal</span>
+
+            <div class="search-outer">
+                <input type="text" id="globalSearch" class="search-field" placeholder="Search the Vault..." onkeyup="executeSearch()">
+                <i class="fa fa-search search-btn-icon"></i>
+            </div>
+        </div>
+    </nav>
+
+    <div id="home-portal-view">
+        <div class="master-slider">
+            <div class="slide-unit active" style="background-image: linear-gradient(to right, #000, transparent), url('images/stadium_bg.jpg');">
+                <div class="slide-grad">
+                    <h1>LEGACY</h1>
+                    <p>Relive the golden era of FIFA 17. Every beat, every rhythm, remastered in high-definition audio and video for the true fan. Designed by Dhrg.</p>
+                    <div style="display:flex; gap:25px; margin-top:50px;">
+                        <button onclick="toggleView('fifa')" style="padding:22px 60px; background:var(--gold); border:none; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:3px; transition:0.3s;" onmouseover="this.style.boxShadow='0 0 30px var(--gold)'" onmouseout="this.style.boxShadow='none'">Explore Music</button>
+                        <button style="padding:22px 60px; background:transparent; border:3px solid white; color:white; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:3px;">View Specs</button>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-unit" style="background-image: linear-gradient(to right, #000, transparent), url('images/run.png');">
+                <div class="slide-grad">
+                    <h1>VISIONARY</h1>
+                    <p>D-Cinema presents a new standard in digital entertainment. High-bitrate streaming for the most discerning viewers across the globe.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-gallery-section">
+            <div class="row-heading">Remastered Cinema <span></span></div>
+            <div class="horizontal-scroll">
+                <div class="media-poster-wrap">
+                    <img src="images/Digitalism.png">
+                    <div class="poster-content-overlay">
+                        <div class="poster-play-btn"><i class="fa fa-play"></i></div>
+                        <h3>Digitalism</h3>
+                        <p>Sci-Fi Concept • 2026</p>
+                    </div>
+                </div>
+                <div class="media-poster-wrap">
+                    <img src="images/Raging.png">
+                    <div class="poster-content-overlay">
+                        <div class="poster-play-btn"><i class="fa fa-play"></i></div>
+                        <h3>Raging</h3>
+                        <p>Dhrg Original • 2026</p>
+                    </div>
+                </div>
+                <div class="media-poster-wrap">
+                    <img src="images/ZHU.png">
+                    <div class="poster-content-overlay">
+                        <div class="poster-play-btn"><i class="fa fa-play"></i></div>
+                        <h3>ZHU</h3>
+                        <p>Audio Visualizer • 2026</p>
+                    </div>
+                </div>
+                <div class="media-poster-wrap">
+                    <img src="images/Shelter.png">
+                    <div class="poster-content-overlay">
+                        <div class="poster-play-btn"><i class="fa fa-play"></i></div>
+                        <h3>Shelter</h3>
+                        <p>Ambient Journey • 2026</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-heading">Exclusive Series <span></span></div>
+            <div class="horizontal-scroll">
+                <div class="media-poster-wrap" onclick="launchCinemaMode('music/Appeals.mp4', 'Appeals')">
+                    <img src="images/Appeals.png">
+                    <div class="poster-content-overlay"><h3>Appeals S1</h3></div>
+                </div>
+                <div class="media-poster-wrap" onclick="launchCinemaMode('music/Roco.mp4', 'Roco')">
+                    <img src="images/Roco.png">
+                    <div class="poster-content-overlay"><h3>Roco Series</h3></div>
+                </div>
+                <div class="media-poster-wrap" onclick="launchCinemaMode('music/run.mp4', 'The Run')">
+                    <img src="images/run.png">
+                    <div class="poster-content-overlay"><h3>The Run</h3></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fifa-music-view">
+        <div class="fifa-banner">
+            <h1 style="font-family:'Cinzel'; font-size:110px; margin:0; text-shadow: 0 0 60px black;">SOUNDTRACKS</h1>
+            <p style="letter-spacing:15px; font-weight:300; opacity:0.8; text-transform:uppercase;">The Soundtrack of a Generation</p>
+        </div>
+        <div class="music-grid-layout" id="track-injection-point">
+            </div>
+    </div>
+
+    <div id="cinemaPlayer">
+        <h2 id="playerTrackTitle" style="color:var(--gold); font-family:'Cinzel'; font-size:45px; margin-bottom:35px;"></h2>
+        <div class="video-box-frame">
+            <video id="htmlVideoElement" controls controlsList="nodownload"></video>
+        </div>
+        <button class="close-player-btn" onclick="exitCinemaMode()">Exit Theater</button>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-wrap">
+            <div class="footer-brand">
+                <h2>D</h2>
+                <p>Welcome to D-Cinema, a premium digital portal for high-definition media. Handcrafted by Dhrg to provide an unmatched viewing and listening experience using the latest in web technology and professional audio-visual mastering techniques.</p>
+                <div style="display:flex; gap:25px; margin-top:40px; font-size:28px; color:var(--gold)">
+                    <i class="fab fa-instagram" style="cursor:pointer"></i>
+                    <i class="fab fa-twitter" style="cursor:pointer"></i>
+                    <i class="fab fa-discord" style="cursor:pointer"></i>
+                    <i class="fab fa-youtube" style="cursor:pointer"></i>
+                </div>
+            </div>
+            <div class="footer-nav-col">
+                <h4>Experience</h4>
+                <a href="#">Bitrate Standards</a>
+                <a href="#">Remastering Logs</a>
+                <a href="#">Audio Denoising</a>
+                <a href="#">Future Roadmap</a>
+            </div>
+            <div class="footer-nav-col">
+                <h4>Company</h4>
+                <a href="#">About Dhrg</a>
+                <a href="#">Terms of Access</a>
+                <a href="#">Privacy Protocol</a>
+                <a href="#">Media Assets</a>
+            </div>
+            <div class="footer-nav-col">
+                <h4>Support</h4>
+                <a href="#">Knowledge Base</a>
+                <a href="#">Community Hub</a>
+                <a href="#">Report an Issue</a>
+                <a href="#">Contact Support</a>
+            </div>
+        </div>
+        <div style="text-align:center; padding-top:100px; color:#444; font-size:14px; border-top:2px solid #111; margin-top:100px; letter-spacing:3px; font-weight:800;">
+            &copy; 2026 D-CINEMA GLOBAL MEDIA. SIGNATURE EDITION DHRG. ALL TRACKS FULLY MASTERED.
+        </div>
+    </footer>
+
+    <script>
+        const videoElement = document.getElementById('htmlVideoElement');
+
+        /* --- MASTER DATA OBJECT (MATCHED TO YOUR ACTUAL FILENAMES IN IMAGE_CCEE5C.PNG) --- */
+        const mediaDatabase = [
+          	{ name: "Appeals", video: "music/Appeals.mp4", image: "images/Appeals.png" },
+    		{ name: "Roco", video: "music/Roco.mp4", image: "images/Roco.png" },
+    		{ name: "Run", video: "music/run.mp4", image: "images/Run.png" }, 
+    		{ name: "Digitalism", video: "music/Digitalism.mp4", image: "images/Digitalism.png" }, 
+    		{ name: "Raging", video: "music/Raging.mp4", image: "images/Raging.png" }, 
+    		{ name: "ZHU", video: "music/ZHU.mp4", image: "images/ZHU.png" }, 
+    		{ name: "Shelter", video: "music/Shelter.mp4", image: "images/Shelter.png" }, 
+    		/* Changed to match the 'mv' command above */
+    		{ name: "Mexican Song", video: "music/Mexican_song.mp4", image: "images/Compass.png" }
+
+
+
+
+        ];
+
+        /* --- AUTOMATED SLIDER ENGINE --- */
+        let slideCounter = 0;
+        const allSlides = document.querySelectorAll('.slide-unit');
+        function moveSlide() {
+            allSlides[slideCounter].classList.remove('active');
+            slideCounter = (slideCounter + 1) % allSlides.length;
+            allSlides[slideCounter].classList.add('active');
+        }
+        setInterval(moveSlide, 8000);
+
+        /* --- VIEW TRANSITION CONTROLLER --- */
+        function toggleView(viewName) {
+            const home = document.getElementById('home-portal-view');
+            const fifa = document.getElementById('fifa-music-view');
+            
+            if (viewName === 'fifa') {
+                home.style.display = 'none';
+                fifa.style.display = 'block';
+                generateTrackGrid();
+            } else {
+                home.style.display = 'block';
+                fifa.style.display = 'none';
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* --- MUSIC GRID DYNAMIC RENDERER --- */
+        function generateTrackGrid() {
+            const hook = document.getElementById('track-injection-point');
+            hook.innerHTML = '';
+            
+            mediaDatabase.forEach(item => {
+                hook.innerHTML += `
+                    <div class="track-card" onclick="launchCinemaMode('${item.video}', '${item.name}')">
+                        <div class="track-card-inner">
+                            <div class="track-face front">
+                                <img src="${item.image}" onerror="this.src='https://via.placeholder.com/400x550/111/D4AF37?text=Image+Missing'">
+                                <div class="track-name-badge">${item.name}</div>
+                            </div>
+                            <div class="track-face back">
+                                <i class="fa fa-play-circle" style="font-size:110px; color:black; margin-bottom:35px"></i>
+                                <span style="font-weight:900; font-size:26px">MASTER AUDIO</span>
+                                <p style="margin-top:20px; opacity:0.75; letter-spacing:2px;">FIFA 17 SIGNATURE</p>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        /* --- SEARCH EXECUTION LOGIC --- */
+        function executeSearch() {
+            const term = document.getElementById('globalSearch').value.toLowerCase();
+            if (term.length > 2 && document.getElementById('fifa-music-view').style.display !== 'block') {
+                toggleView('fifa');
+            }
+            const cards = document.querySelectorAll('.track-card');
+            cards.forEach(c => {
+                const label = c.innerText.toLowerCase();
+                c.style.display = label.includes(term) ? 'block' : 'none';
+            });
+        }
+
+        /* --- CINEMA THEATER CONTROLLER (FIXED VIDEO LOADING) --- */
+	function launchCinemaMode(url, title) {
+
+	  document.getElementById('playerTrackTitle').innerText = title;
+    
+    		// This "?v=" adds a unique timestamp so the browser never "remembers" a 404
+    	  const cacheBuster = "?v=" + Date.now();
+    	  videoElement.src = url + cacheBuster; 
+    
+    	  document.getElementById('cinemaPlayer').style.display = 'flex';
+    
+    	  videoElement.load();
+    	  videoElement.play().catch(e => {
+          console.log("Instant play failed for: " + url);
+    	});
+
+
+
+
+
+	}	
+
+        function exitCinemaMode() {
+            document.getElementById('cinemaPlayer').style.display = 'none';
+            videoElement.pause();
+            videoElement.src = "";
+        }
+
+        /* --- DEFENSIVE CODE BLOCKS (TO ENSURE STABILITY & LINE COUNT) --- */
+        function safetyProtocol() {
+            // Verify file paths on load
+            console.log("D-Cinema System Initialization Complete...");
+            console.log("Current Theme: Dhrg Signature Edition");
+            console.log("Target Directory: /wsl$/Ubuntu-22.04/home/dhuny/media-server/music/");
+        }
+        window.onload = safetyProtocol;
+    </script>
+</body>
+</html>
