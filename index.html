@@ -565,35 +565,30 @@
         { name: "Shelter", video: "music/Shelter_small.mp4", image: "images/shelter.png", desc: "Porter Robinson" },
         { name: "Mexican Song", video: "music/Mexican_song_small.mp4", image: "images/Mexican_song.png", desc: "Local Favorite" },
         { name: "Digitalism", video: "music/Digitalism_small.mp4", image: "images/Digitalism.png", desc: "Electronic Beats" },
-        { name: "Vera i Nadezehda", video: "music/Vera i Nadezehda_small.mp4", image: "images/stadium_bg.png", desc: "Special Track" }
+        { name: "Vera i Nadezehda", video: "music/Vera_i_Nadezehda_small.mp4", image: "images/stadium_bg.png", desc: "Special Track" }
     ];
 
     /* --- 2. THEATRE MODE ENGINE (FIXED VERSION) --- */
     function launchCinemaMode(url, title) {
+	    console.log("System Loading Path:", url);
 	    const videoElement = document.getElementById('mainVideo');
 	    const playerContainer = document.getElementById('cinemaPlayer');
 	    
-	    // The '?v=' adds a unique number to the end to force GitHub to send the LATEST version
-	    const versionedUrl = encodeURI(url) + "?v=" + Date.now();
+	    // This bypasses the LFS local cache issue
+	    const rawGitHubUrl = "https://raw.githubusercontent.com/dhurghamCreation/D-Music-Videos/main/" + encodeURI(url);
 	    
 	    videoElement.pause();
-	    videoElement.removeAttribute('src'); // Completely clear old data
-	    videoElement.load();
-	    
-	    videoElement.src = "./" + versionedUrl;
-	    videoElement.setAttribute('preload', 'auto'); // Tell browser to start downloading immediately
-	    
+	    videoElement.src = rawGitHubUrl; 
+	    videoElement.load(); 
+	
 	    document.getElementById('playerTrackTitle').innerText = title;
 	    playerContainer.style.display = 'flex';
-	
-	    // Give the browser a half-second to buffer
-	    setTimeout(() => {
-	        videoElement.play().catch(e => {
-	            console.log("Playback requires user interaction.");
-	        });
-	    }, 500);
+	    
+	    videoElement.play().catch(e => {
+	        console.error("Playback stalled:", e);
+	        alert("Please click the video to start playback (Browser Security)");
+	    });
 	}
-
     function exitCinemaMode() {
         const videoElement = document.getElementById('mainVideo');
         document.getElementById('cinemaPlayer').style.display = 'none';
