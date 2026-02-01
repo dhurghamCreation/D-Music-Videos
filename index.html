@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D-Cinema | Ultimate Signature Edition</title>
     <style>
-        
+        #home {
+		    display: flex;
+		    flex-direction: column;
+		    justify-content: flex-start; /* Aligns content to top */
+		    padding-top: 100px; /* Space for the fixed navbar */
+		}
         :root {
             --primary-gold: #FFD700;
             --primary-red: #E50914;
@@ -178,8 +183,21 @@
         }
 
         .nav-links { list-style: none; display: flex; gap: 30px; }
-        .nav-links li { cursor: pointer; color: var(--text-dim); transition: 0.3s; font-size: 1rem; }
-        .nav-links li:hover, .nav-links li.active { color: white; font-weight: bold; }
+	    .nav-links li {
+		    cursor: pointer;
+		    color: white;
+		    padding: 10px 25px;
+		    border: 1px solid var(--primary-red);
+		    border-radius: 50px; /* Makes them pills */
+		    transition: 0.3s;
+		    background: rgba(0,0,0,0.5);
+		}
+	
+		.nav-links li:hover {
+		    background: var(--primary-red);
+		    box-shadow: 0 0 15px var(--primary-red);
+		    transform: scale(1.1);
+		}
 
         
         #hero-slider {
@@ -201,11 +219,10 @@
         .slide.active { opacity: 1; }
 
         .hero-content {
-            position: absolute;
-            bottom: 20%;
-            left: 50px;
-            max-width: 600px;
-            z-index: 10;
+            position: relative; /* Removes the bottom-absolute positioning */
+		    left: 0;
+		    margin: 20px auto;
+		    text-align: center;
         }
 
         .hero-title { font-size: 4rem; margin-bottom: 20px; text-shadow: 2px 2px 10px black; }
@@ -411,34 +428,9 @@
     </div>
 	
 
-    <div class="tab-section">
-        <button class="tab-btn">Home</button>
-        <button class="tab-btn">Movies & Music</button>
-        <button class="tab-btn">TV Series</button>
-    </div>
+    
 
-    <div class="film-container">
-        <div class="film-card card-cars" onclick="playFilm('music/Cars.mp4')">
-            <div class="card-overlay">
-                <h2>CARS</h2>
-                <button class="tab-btn">Watch Now</button>
-            </div>
-        </div>
-
-        <div class="film-card card-horton" onclick="playFilm('music/Horton.mp4')">
-            <div class="card-overlay">
-                <h2>HORTON</h2>
-                <button class="tab-btn">Watch Now</button>
-            </div>
-        </div>
-
-        <div class="film-card card-panda" onclick="playFilm('music/KungFuPanda3.mp4')">
-            <div class="card-overlay">
-                <h2>KUNG FU PANDA 3</h2>
-                <button class="tab-btn">Watch Now</button>
-            </div>
-        </div>
-    </div>
+   
 
     <nav id="navbar">
         <div class="nav-logo" onclick="switchTab('home')">D-CINEMA GOLD</div>
@@ -542,6 +534,28 @@
 
     <div id="series" class="section-container">
         <h2 class="section-title">TV Series</h2>
+		 <div class="film-container">
+	        <div class="film-card card-cars" onclick="playFilm('music/Cars.mp4')">
+	            <div class="card-overlay">
+	                <h2>CARS</h2>
+	                <button class="tab-btn">Watch Now</button>
+	            </div>
+	        </div>
+	
+	        <div class="film-card card-horton" onclick="playFilm('music/Horton.mp4')">
+	            <div class="card-overlay">
+	                <h2>HORTON</h2>
+	                <button class="tab-btn">Watch Now</button>
+	            </div>
+	        </div>
+	
+	        <div class="film-card card-panda" onclick="playFilm('music/KungFuPanda3.mp4')">
+	            <div class="card-overlay">
+	                <h2>KUNG FU PANDA 3</h2>
+	                <button class="tab-btn">Watch Now</button>
+	            </div>
+	        </div>
+	    </div>
         <div style="text-align: center; padding: 100px;">
             <h1>Coming Soon</h1>
             <p>The server is currently indexing 'Game of Thrones' and 'Breaking Bad'...</p>
@@ -618,15 +632,26 @@
     }
 
     /* --- 3. TAB & LIBRARY LOGIC --- */
-    function switchTab(tabId) {
-	    document.querySelectorAll('.section-container').forEach(el => {
-	        el.style.display = 'none'; // Hide everything
-	    });
-	    document.getElementById(tabId).style.display = 'block'; // Show only target
-	}
-	function playFilm(url) {
-	    launchCinemaMode(url, "Now Playing");
-	}
+	    function switchTab(tabId) {
+	    // 1. Hide every single section container
+		    document.querySelectorAll('.section-container, .film-container, .header-premium, #hero-slider').forEach(el => {
+		        el.style.display = 'none';
+		        el.classList.remove('active');
+		    });
+		
+		    // 2. Show only the specific section you clicked
+		    const target = document.getElementById(tabId);
+		    if (target) {
+		        target.style.display = 'block';
+		        target.classList.add('active');
+		    }
+		
+		    // 3. Special Case: Only show the film images if we are on 'series'
+		    const filmContainer = document.querySelector('.film-container');
+		    filmContainer.style.display = (tabId === 'series') ? 'grid' : 'none';
+		
+		    window.scrollTo(0, 0); // Jump to top to feel like a new page
+		}
 
     function renderLibrary() {
         const grid = document.getElementById('movies-grid');
